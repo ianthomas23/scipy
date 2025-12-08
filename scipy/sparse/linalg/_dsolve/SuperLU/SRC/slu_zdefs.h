@@ -1,9 +1,9 @@
 /*! \file
 Copyright (c) 2003, The Regents of the University of California, through
-Lawrence Berkeley National Laboratory (subject to receipt of any required 
-approvals from U.S. Dept. of Energy) 
+Lawrence Berkeley National Laboratory (subject to receipt of any required
+approvals from U.S. Dept. of Energy)
 
-All rights reserved. 
+All rights reserved.
 
 The source code is distributed under BSD license, see the file License.txt
 at the top-level directory.
@@ -11,27 +11,27 @@ at the top-level directory.
 
 /*! @file slu_zdefs.h
  * \brief Header file for real operations
- * 
- * <pre> 
+ *
+ * <pre>
  * -- SuperLU routine (version 7.0.0) --
  * Univ. of California Berkeley, Xerox Palo Alto Research Center,
  * and Lawrence Berkeley National Lab.
  * November, 2010
  * August 2024
- * 
+ *
  * Global data structures used in LU factorization -
- * 
+ *
  *   nsuper: \#supernodes = nsuper + 1, numbered [0, nsuper].
  *   (xsup,supno): supno[i] is the supernode no to which i belongs;
  *	xsup(s) points to the beginning of the s-th supernode.
  *	e.g.   supno 0 1 2 2 3 3 3 4 4 4 4 4   (n=12)
  *	        xsup 0 1 2 4 7 12
- *	Note: dfs will be performed on supernode rep. relative to the new 
+ *	Note: dfs will be performed on supernode rep. relative to the new
  *	      row pivoting ordering
  *
  *   (xlsub,lsub): lsub[*] contains the compressed subscript of
  *	rectangular supernodes; xlsub[j] points to the starting
- *	location of the j-th column in lsub[*]. Note that xlsub 
+ *	location of the j-th column in lsub[*]. Note that xlsub
  *	is indexed by column.
  *	Storage: original row subscripts
  *
@@ -140,7 +140,7 @@ extern void
 zCreate_Dense_Matrix(SuperMatrix *, int, int, doublecomplex *, int,
 		     Stype_t, Dtype_t, Mtype_t);
 extern void
-zCreate_SuperNode_Matrix(SuperMatrix *, int, int, int_t, doublecomplex *, 
+zCreate_SuperNode_Matrix(SuperMatrix *, int, int, int_t, doublecomplex *,
 		         int_t *, int_t *, int_t *, int *, int *,
 			 Stype_t, Dtype_t, Mtype_t);
 extern void
@@ -148,7 +148,7 @@ zCopy_Dense_Matrix(int, int, doublecomplex *, int, doublecomplex *, int);
 
 extern void    zallocateA (int, int_t, doublecomplex **, int_t **, int_t **);
 extern void    zgstrf (superlu_options_t*, SuperMatrix*,
-                       int, int, int*, void *, int_t, int *, int *, 
+                       int, int, int*, void *, int_t, int *, int *,
                        SuperMatrix *, SuperMatrix *, GlobalLU_t *,
 		       SuperLUStat_t*, int_t *info);
 extern int_t   zsnode_dfs (const int, const int, const int_t *, const int_t *,
@@ -167,8 +167,8 @@ extern int     zcolumn_bmod (const int, const int, doublecomplex *,
 			   doublecomplex *, int *, int *, int,
                            GlobalLU_t *, SuperLUStat_t*);
 extern int     zcopy_to_ucol (int, int, int *, int *, int *,
-                              doublecomplex *, GlobalLU_t *);         
-extern int     zpivotL (const int, const double, int *, int *, 
+                              doublecomplex *, GlobalLU_t *);
+extern int     zpivotL (const int, const double, int *, int *,
                          int *, int *, int *, GlobalLU_t *, SuperLUStat_t*);
 extern void    zpruneL (const int, const int *, const int, const int,
 			  const int *, const int *, int_t *, GlobalLU_t *);
@@ -198,7 +198,7 @@ extern int     ilu_zpivotL (const int, const double, int *, int *, int, int *,
 			    int *, int *, int *, double, milu_t,
                             doublecomplex, GlobalLU_t *, SuperLUStat_t*);
 extern int     ilu_zdrop_row (superlu_options_t *, int, int, double,
-                              int, int *, double *, GlobalLU_t *, 
+                              int, int *, double *, GlobalLU_t *,
                               double *, double *, int);
 
 
@@ -208,12 +208,12 @@ extern void    zgsequ (SuperMatrix *, double *, double *, double *,
 			double *, double *, int *);
 extern void    zlaqgs (SuperMatrix *, double *, double *, double,
                         double, double, char *);
-extern void    zgscon (char *, SuperMatrix *, SuperMatrix *, 
+extern void    zgscon (char *, SuperMatrix *, SuperMatrix *,
 		         double, double *, SuperLUStat_t*, int *);
-extern double   zPivotGrowth(int, SuperMatrix *, int *, 
+extern double   zPivotGrowth(int, SuperMatrix *, int *,
                             SuperMatrix *, SuperMatrix *);
 extern void    zgsrfs (trans_t, SuperMatrix *, SuperMatrix *,
-                       SuperMatrix *, int *, int *, char *, double *, 
+                       SuperMatrix *, int *, int *, char *, double *,
                        double *, SuperMatrix *, SuperMatrix *,
                        double *, double *, SuperLUStat_t*, int *);
 
@@ -223,7 +223,7 @@ extern int     sp_zgemv (char *, doublecomplex, SuperMatrix *, doublecomplex *,
 			int, doublecomplex, doublecomplex *, int);
 
 extern int     sp_zgemm (char *, char *, int, int, int, doublecomplex,
-			SuperMatrix *, doublecomplex *, int, doublecomplex, 
+			SuperMatrix *, doublecomplex *, int, doublecomplex,
 			doublecomplex *, int);
 extern         double dmach(char *);   /* from C99 standard, in float.h */
 
@@ -268,13 +268,13 @@ extern void zcopy_(slu_blasint *, doublecomplex *, slu_blasint *, doublecomplex 
 extern void zaxpy_(slu_blasint *, doublecomplex *, doublecomplex *, slu_blasint *, doublecomplex *, slu_blasint *);
 extern void zgemm_(const char*, const char*, const slu_blasint*, const slu_blasint*, const slu_blasint*,
                   const doublecomplex*, const doublecomplex*, const slu_blasint*, const doublecomplex*,
-		  const slu_blasint*, const doublecomplex*, doublecomplex*, const slu_blasint*);
+		  const slu_blasint*, const doublecomplex*, doublecomplex*, const slu_blasint*, int, int);
 extern void ztrsv_(char*, char*, char*, slu_blasint*, doublecomplex*, slu_blasint*,
-                  doublecomplex*, slu_blasint*);
+                  doublecomplex*, slu_blasint*, int, int, int);
 extern void ztrsm_(char*, char*, char*, char*, slu_blasint*, slu_blasint*,
-                  doublecomplex*, doublecomplex*, slu_blasint*, doublecomplex*, slu_blasint*);
+                  doublecomplex*, doublecomplex*, slu_blasint*, doublecomplex*, slu_blasint*, int, int, int, int);
 extern void zgemv_(char *, slu_blasint *, slu_blasint *, doublecomplex *, doublecomplex *a, slu_blasint *,
-                  doublecomplex *, slu_blasint *, doublecomplex *, doublecomplex *, slu_blasint *);
+                  doublecomplex *, slu_blasint *, doublecomplex *, doublecomplex *, slu_blasint *, int);
 
 extern void zusolve(int, int, doublecomplex*, doublecomplex*);
 extern void zlsolve(int, int, doublecomplex*, doublecomplex*);
