@@ -175,8 +175,8 @@ zgsrfs(trans_t trans, SuperMatrix *A, SuperMatrix *L, SuperMatrix *U,
     extern int CCOPY(int *, doublecomplex *, int *, doublecomplex *, int *);
     extern int CSAXPY(int *, doublecomplex *, doublecomplex *, int *, doublecomplex *, int *);
 #else
-    extern int zcopy_(int *, doublecomplex *, int *, doublecomplex *, int *);
-    extern int zaxpy_(int *, doublecomplex *, doublecomplex *, int *, doublecomplex *, int *);
+    extern void zcopy_(int *, doublecomplex *, int *, doublecomplex *, int *);
+    extern void zaxpy_(int *, doublecomplex *, doublecomplex *, int *, doublecomplex *, int *);
 #endif
 
     Astore = A->Store;
