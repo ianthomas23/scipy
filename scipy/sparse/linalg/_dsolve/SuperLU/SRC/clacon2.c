@@ -1,9 +1,9 @@
 /*! \file
 Copyright (c) 2003, The Regents of the University of California, through
-Lawrence Berkeley National Laboratory (subject to receipt of any required 
-approvals from U.S. Dept. of Energy) 
+Lawrence Berkeley National Laboratory (subject to receipt of any required
+approvals from U.S. Dept. of Energy)
 
-All rights reserved. 
+All rights reserved.
 
 The source code is distributed under BSD license, see the file License.txt
 at the top-level directory.
@@ -26,12 +26,12 @@ at the top-level directory.
 /*! \brief
  *
  * <pre>
- *   Purpose   
- *   =======   
+ *   Purpose
+ *   =======
  *
- *   CLACON2 estimates the 1-norm of a square matrix A.   
- *   Reverse communication is used for evaluating matrix-vector products. 
- * 
+ *   CLACON2 estimates the 1-norm of a square matrix A.
+ *   Reverse communication is used for evaluating matrix-vector products.
+ *
  *   This is a thread safe version of CLACON, which uses the array ISAVE
  *   in place of a STATIC variables, as follows:
  *
@@ -41,48 +41,48 @@ at the top-level directory.
  *      iter     isave[2]
  *
  *
- *   Arguments   
- *   =========   
+ *   Arguments
+ *   =========
  *
  *   N      (input) INT
- *          The order of the matrix.  N >= 1.   
+ *          The order of the matrix.  N >= 1.
  *
- *   V      (workspace) SINGLE COMPLEX PRECISION array, dimension (N)   
- *          On the final return, V = A*W,  where  EST = norm(V)/norm(W)   
- *          (W is not returned).   
+ *   V      (workspace) SINGLE COMPLEX PRECISION array, dimension (N)
+ *          On the final return, V = A*W,  where  EST = norm(V)/norm(W)
+ *          (W is not returned).
  *
- *   X      (input/output) SINGLE COMPLEX PRECISION array, dimension (N)   
- *          On an intermediate return, X should be overwritten by   
- *                A * X,   if KASE=1,   
+ *   X      (input/output) SINGLE COMPLEX PRECISION array, dimension (N)
+ *          On an intermediate return, X should be overwritten by
+ *                A * X,   if KASE=1,
  *                A' * X,  if KASE=2,
  *          where A' is the conjugate transpose of A,
- *         and CLACON must be re-called with all the other parameters   
- *          unchanged.   
+ *         and CLACON must be re-called with all the other parameters
+ *          unchanged.
  *
  *
- *   EST    (output) FLOAT PRECISION   
- *          An estimate (a lower bound) for norm(A).   
+ *   EST    (output) FLOAT PRECISION
+ *          An estimate (a lower bound) for norm(A).
  *
  *   KASE   (input/output) INT
- *          On the initial call to CLACON, KASE should be 0.   
- *          On an intermediate return, KASE will be 1 or 2, indicating   
- *          whether X should be overwritten by A * X  or A' * X.   
- *          On the final return from CLACON, KASE will again be 0.   
+ *          On the initial call to CLACON, KASE should be 0.
+ *          On an intermediate return, KASE will be 1 or 2, indicating
+ *          whether X should be overwritten by A * X  or A' * X.
+ *          On the final return from CLACON, KASE will again be 0.
  *
  *   isave  (input/output) int [3]
  *          ISAVE is INTEGER array, dimension (3)
  *          ISAVE is used to save variables between calls to CLACON2
  *
- *   Further Details   
- *   ===============   
+ *   Further Details
+ *   ===============
  *
- *   Contributed by Nick Higham, University of Manchester.   
- *   Originally named CONEST, dated March 16, 1988.   
+ *   Contributed by Nick Higham, University of Manchester.
+ *   Originally named CONEST, dated March 16, 1988.
  *
- *   Reference: N.J. Higham, "FORTRAN codes for estimating the one-norm of 
- *   a real or complex matrix, with applications to condition estimation", 
- *   ACM Trans. Math. Soft., vol. 14, no. 4, pp. 381-396, December 1988.   
- *   ===================================================================== 
+ *   Reference: N.J. Higham, "FORTRAN codes for estimating the one-norm of
+ *   a real or complex matrix, with applications to condition estimation",
+ *   ACM Trans. Math. Soft., vol. 14, no. 4, pp. 381-396, December 1988.
+ *   =====================================================================
  * </pre>
  */
 
@@ -97,7 +97,7 @@ clacon2_(int *n, singlecomplex *v, singlecomplex *x, float *est, int *kase, int 
 
     /* System generated locals */
     float d__1;
-    
+
     /* Local variables */
     int jlast;
     float altsgn, estold;
@@ -129,7 +129,7 @@ clacon2_(int *n, singlecomplex *v, singlecomplex *x, float *est, int *kase, int 
 	case 5:  goto L140;
     }
 
-    /*     ................ ENTRY   (isave[0] == 1)   
+    /*     ................ ENTRY   (isave[0] == 1)
 	   FIRST ITERATION.  X HAS BEEN OVERWRITTEN BY A*X. */
   L20:
     if (*n == 1) {
@@ -154,7 +154,7 @@ clacon2_(int *n, singlecomplex *v, singlecomplex *x, float *est, int *kase, int 
     isave[0] = 2;  /* jump = 2; */
     return 0;
 
-    /*     ................ ENTRY   (isave[0] == 2)   
+    /*     ................ ENTRY   (isave[0] == 2)
 	   FIRST ITERATION.  X HAS BEEN OVERWRITTEN BY TRANSPOSE(A)*X. */
 L40:
     isave[1] = icmax1_slu(n, &x[0], &c__1_int);  /* j */
@@ -169,7 +169,7 @@ L50:
     isave[0] = 3;  /* jump = 3; */
     return 0;
 
-    /*     ................ ENTRY   (isave[0] == 3)   
+    /*     ................ ENTRY   (isave[0] == 3)
 	   X HAS BEEN OVERWRITTEN BY A*X. */
 L70:
 #ifdef _CRAY
@@ -221,8 +221,8 @@ L120:
     *kase = 1;
     isave[0] = 5;  /* jump = 5; */
     return 0;
-    
-    /*     ................ ENTRY   (isave[0] = 5)   
+
+    /*     ................ ENTRY   (isave[0] = 5)
 	   X HAS BEEN OVERWRITTEN BY A*X. */
 L140:
     temp = scsum1_slu(n, x, &c__1_int) / (float)(*n * 3) * 2.;
