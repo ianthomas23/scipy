@@ -539,6 +539,13 @@ def generate_decl_pyx(name, return_type, argnames, argtypes, accelerate,
         pyx_call_args[0] = ''.join([arg_casts(c_argtypes[0]), '&', argnames[0]])
     pyx_call_args = ', '.join(pyx_call_args)
     blas_macro, blas_name = get_blas_macro_and_name(name, accelerate, ilp64)
+
+    # Extra length argument for each char argument.
+    for argtype, argname in zip(argtypes, argnames):
+        if argtype == 'char':
+            c_proto += f', int {argname}_len'
+            pyx_call_args += ', 1'
+
     return f"""
 cdef extern from "{header_name}":
     {blas_return_type} _fortran_{name} "{blas_macro}({blas_name})"({c_proto}) nogil
@@ -690,6 +697,18 @@ def generate_decl_c(name, return_type, argnames, argtypes, accelerate,
         argnames = ['out'] + argnames
         c_argtypes = [c_return_type] + c_argtypes
         c_return_type = 'void'
+    extra_c_argtypes = []
+    extra_argnames = []
+
+    # Extra length argument for each char argument.
+    for c_argtype, argname in zip(c_argtypes, argnames):
+        if c_argtype == 'char':
+            extra_c_argtypes.append("int")
+            extra_argnames.append(f"{argname}_len")
+
+    c_argtypes = c_argtypes + extra_c_argtypes
+    argnames = argnames + extra_argnames
+
     blas_macro, blas_name = get_blas_macro_and_name(name, accelerate, ilp64)
     c_args = ', '.join(f'{t} *{n}' for t, n in zip(c_argtypes, argnames))
     return f"{c_return_type} {blas_macro}({blas_name})({c_args});\n"
