@@ -175,8 +175,8 @@ dgsrfs(trans_t trans, SuperMatrix *A, SuperMatrix *L, SuperMatrix *U,
     extern int SCOPY(int *, double *, int *, double *, int *);
     extern int SSAXPY(int *, double *, double *, int *, double *, int *);
 #else
-    extern int dcopy_(int *, double *, int *, double *, int *);
-    extern int daxpy_(int *, double *, double *, int *, double *, int *);
+    extern void dcopy_(int *, double *, int *, double *, int *);
+    extern void daxpy_(int *, double *, double *, int *, double *, int *);
 #endif
 
     Astore = A->Store;
