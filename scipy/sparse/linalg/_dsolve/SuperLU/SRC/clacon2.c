@@ -106,7 +106,7 @@ clacon2_(int *n, singlecomplex *v, singlecomplex *x, float *est, int *kase, int 
     extern float smach(char *);
     extern int icmax1_slu(int *, singlecomplex *, int *);
     extern double scsum1_slu(int *, singlecomplex *, int *);
-    extern int ccopy_(int *, singlecomplex *, int *, singlecomplex *, int *);
+    extern void ccopy_(int *, singlecomplex *, int *, singlecomplex *, int *);
 
     safmin = smach("Safe minimum");
     if ( *kase == 0 ) {

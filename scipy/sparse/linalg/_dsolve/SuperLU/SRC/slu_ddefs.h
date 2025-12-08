@@ -260,15 +260,15 @@ extern void    dcheck_tempv(int, double *);
 
 /*! \brief BLAS */
 
-extern int dgemm_(const char*, const char*, const int*, const int*, const int*,
+extern void dgemm_(const char*, const char*, const int*, const int*, const int*,
                   const double*, const double*, const int*, const double*,
-		  const int*, const double*, double*, const int*);
-extern int dtrsv_(char*, char*, char*, int*, double*, int*,
-                  double*, int*);
-extern int dtrsm_(char*, char*, char*, char*, int*, int*,
-                  double*, double*, int*, double*, int*);
-extern int dgemv_(char *, int *, int *, double *, double *a, int *,
-                  double *, int *, double *, double *, int *);
+		  const int*, const double*, double*, const int*, int, int);
+extern void dtrsv_(char*, char*, char*, int*, double*, int*,
+                  double*, int*, int, int, int);
+extern void dtrsm_(char*, char*, char*, char*, int*, int*,
+                  double*, double*, int*, double*, int*, int, int, int, int);
+extern void dgemv_(char *, int *, int *, double *, double *a, int *,
+                  double *, int *, double *, double *, int *, int);
 
 extern void dusolve(int, int, double*, double*);
 extern void dlsolve(int, int, double*, double*);

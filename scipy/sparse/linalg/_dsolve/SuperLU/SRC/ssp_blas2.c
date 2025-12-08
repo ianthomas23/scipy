@@ -159,10 +159,10 @@ sp_strsv(char *uplo, char *trans, char *diag, SuperMatrix *L,
 		       	&nsupr, &x[fsupc], &incx, &beta, &work[0], &incy);
 #else
 		    strsv_("L", "N", "U", &nsupc, &Lval[luptr], &nsupr,
-		       	&x[fsupc], &incx);
+		       	&x[fsupc], &incx, 1, 1, 1 );
 		
 		    sgemv_("N", &nrow, &nsupc, &alpha, &Lval[luptr+nsupc], 
-		       	&nsupr, &x[fsupc], &incx, &beta, &work[0], &incy);
+		       	&nsupr, &x[fsupc], &incx, &beta, &work[0], &incy, 1 );
 #endif
 #else
 		    slsolve ( nsupr, nsupc, &Lval[luptr], &x[fsupc]);
@@ -207,7 +207,7 @@ sp_strsv(char *uplo, char *trans, char *diag, SuperMatrix *L,
 		       &x[fsupc], &incx);
 #else
 		    strsv_("U", "N", "N", &nsupc, &Lval[luptr], &nsupr,
-                           &x[fsupc], &incx);
+                           &x[fsupc], &incx, 1, 1, 1 );
 #endif
 #else		
 		    susolve ( nsupr, nsupc, &Lval[luptr], &x[fsupc] );
@@ -260,7 +260,7 @@ sp_strsv(char *uplo, char *trans, char *diag, SuperMatrix *L,
 			&x[fsupc], &incx);
 #else
 		    strsv_("L", "T", "U", &nsupc, &Lval[luptr], &nsupr,
-			&x[fsupc], &incx);
+			&x[fsupc], &incx, 1, 1, 1 );
 #endif
 		}
 	    }
@@ -295,7 +295,7 @@ sp_strsv(char *uplo, char *trans, char *diag, SuperMatrix *L,
 			    &x[fsupc], &incx);
 #else
 		    strsv_("U", "T", "N", &nsupc, &Lval[luptr], &nsupr,
-			    &x[fsupc], &incx);
+			    &x[fsupc], &incx, 1, 1, 1 );
 #endif
 		}
 	    } /* for k ... */

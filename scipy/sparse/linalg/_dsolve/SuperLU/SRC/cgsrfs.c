@@ -175,8 +175,8 @@ cgsrfs(trans_t trans, SuperMatrix *A, SuperMatrix *L, SuperMatrix *U,
     extern int CCOPY(int *, singlecomplex *, int *, singlecomplex *, int *);
     extern int CSAXPY(int *, singlecomplex *, singlecomplex *, int *, singlecomplex *, int *);
 #else
-    extern int ccopy_(int *, singlecomplex *, int *, singlecomplex *, int *);
-    extern int caxpy_(int *, singlecomplex *, singlecomplex *, int *, singlecomplex *, int *);
+    extern void ccopy_(int *, singlecomplex *, int *, singlecomplex *, int *);
+    extern void caxpy_(int *, singlecomplex *, singlecomplex *, int *, singlecomplex *, int *);
 #endif
 
     Astore = A->Store;
