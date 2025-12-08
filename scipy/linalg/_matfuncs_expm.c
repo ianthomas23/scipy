@@ -244,7 +244,7 @@ snorm1est(float* A, int n)
         tempint = from;
         from = to;
         to = tempint;
-        sgemv_(opA, &n, &n, &dbl1, A, &n, &work_arr[from], &int1, &dbl0, &work_arr[to], &int1);
+        sgemv_(opA, &n, &n, &dbl1, A, &n, &work_arr[from], &int1, &dbl0, &work_arr[to], &int1, 1);
         slacn2_(&n, work_arr, &work_arr[to], iwork_arr, &est, &kase, isave);
     }
 
@@ -276,7 +276,7 @@ dnorm1est(double* A, int n)
         tempint = from;
         from = to;
         to = tempint;
-        dgemv_(opA, &n, &n, &dbl1, A, &n, &work_arr[from], &int1, &dbl0, &work_arr[to], &int1);
+        dgemv_(opA, &n, &n, &dbl1, A, &n, &work_arr[from], &int1, &dbl0, &work_arr[to], &int1, 1);
         dlacn2_(&n, work_arr, &work_arr[to], iwork_arr, &est, &kase, isave);
     }
 
@@ -306,7 +306,7 @@ cnorm1est(EXPM_C* A, int n)
         tempint = from;
         from = to;
         to = tempint;
-        cgemv_(opA, &n, &n, &dbl1, A, &n, &work_arr[from], &int1, &dbl0, &work_arr[to], &int1);
+        cgemv_(opA, &n, &n, &dbl1, A, &n, &work_arr[from], &int1, &dbl0, &work_arr[to], &int1, 1);
         clacn2_(&n, work_arr, &work_arr[to], &est, &kase, isave);
     }
 
@@ -335,7 +335,7 @@ znorm1est(EXPM_Z* A, int n)
         tempint = from;
         from = to;
         to = tempint;
-        zgemv_(opA, &n, &n, &dbl1, A, &n, &work_arr[from], &int1, &dbl0, &work_arr[to], &int1);
+        zgemv_(opA, &n, &n, &dbl1, A, &n, &work_arr[from], &int1, &dbl0, &work_arr[to], &int1, 1);
         zlacn2_(&n, work_arr, &work_arr[to], &est, &kase, isave);
     }
 
@@ -391,14 +391,14 @@ pick_pade_structure_s(float* Am, const Py_ssize_t size_n, int* m, int* s)
     }
 
     // First spin = normest(|A|, m=1)
-    sgemv_("N", &n, &n, &dbl1, absA, &n, work_arr, &int1, &dbl0, &work_arr[n], &int1);
+    sgemv_("N", &n, &n, &dbl1, absA, &n, work_arr, &int1, &dbl0, &work_arr[n], &int1, 1);
     normA = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > normA) { normA = work_arr[n+i]; } }
 
 
-    sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[0*n*n], &n, &Am[0*n*n], &n, &dbl0, &Am[1*n*n], &n);
-    sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[1*n*n], &n, &Am[1*n*n], &n, &dbl0, &Am[2*n*n], &n);
-    sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[2*n*n], &n, &Am[1*n*n], &n, &dbl0, &Am[3*n*n], &n);
+    sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[0*n*n], &n, &Am[0*n*n], &n, &dbl0, &Am[1*n*n], &n, 1, 1);
+    sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[1*n*n], &n, &Am[1*n*n], &n, &dbl0, &Am[2*n*n], &n, 1, 1);
+    sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[2*n*n], &n, &Am[1*n*n], &n, &dbl0, &Am[3*n*n], &n, 1, 1);
     d4 = powf(snorm1(&Am[2*n*n], work_arr, n), 0.25);
     d6 = powf(snorm1(&Am[3*n*n], work_arr, n), 1.0/6.0);
     eta0 = fmaxf(d4, d6);
@@ -412,8 +412,8 @@ pick_pade_structure_s(float* Am, const Py_ssize_t size_n, int* m, int* s)
     // absA * work_arr[:n] = work_arr[n:]
     for (i = 0; i < 3; i++)
     {
-        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1);
-        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1);
+        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1, 1);
+        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1, 1);
     }
     temp = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > temp) { temp = work_arr[n+i]; } }
@@ -431,8 +431,8 @@ pick_pade_structure_s(float* Am, const Py_ssize_t size_n, int* m, int* s)
     // 1-norm of A**11
     for (i = 0; i < 2; i++)
     {
-        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1);
-        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1);
+        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1, 1);
+        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1, 1);
     }
     temp = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > temp) { temp = work_arr[n+i]; } }
@@ -450,7 +450,7 @@ pick_pade_structure_s(float* Am, const Py_ssize_t size_n, int* m, int* s)
     // -------
     if (n < 400)
     {
-        sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[2*n*n], &n, &Am[2*n*n], &n, &dbl0, &Am[4*n*n], &n);
+        sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[2*n*n], &n, &Am[2*n*n], &n, &dbl0, &Am[4*n*n], &n, 1, 1);
         d8 = powf(snorm1(&Am[4*n*n], work_arr, n), 0.125);
     } else {
         test = snorm1est(&Am[0], 8);
@@ -464,8 +464,8 @@ pick_pade_structure_s(float* Am, const Py_ssize_t size_n, int* m, int* s)
     // 1-norm of A**15
     for (i = 0; i < 2; i++)
     {
-        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1);
-        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1);
+        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1, 1);
+        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1, 1);
     }
     temp = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > temp) { temp = work_arr[n+i]; } }
@@ -484,8 +484,8 @@ pick_pade_structure_s(float* Am, const Py_ssize_t size_n, int* m, int* s)
     // 1-norm of A**19
     for (i = 0; i < 2; i++)
     {
-        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1);
-        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1);
+        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1, 1);
+        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1, 1);
     }
     temp = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > temp) { temp = work_arr[n+i]; } }
@@ -496,7 +496,7 @@ pick_pade_structure_s(float* Am, const Py_ssize_t size_n, int* m, int* s)
     if ((eta2 < theta[3]) && lm == 0)
     {
         if (n >= 400) {
-            sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[2*n*n], &n, &Am[2*n*n], &n, &dbl0, &Am[4*n*n], &n);
+            sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[2*n*n], &n, &Am[2*n*n], &n, &dbl0, &Am[4*n*n], &n, 1, 1);
         }
         *m = 9;
         goto FREE_EXIT;
@@ -507,7 +507,7 @@ pick_pade_structure_s(float* Am, const Py_ssize_t size_n, int* m, int* s)
     // Scale-square
     if (n < 400)
     {
-        sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[3*n*n], &n, &Am[2*n*n], &n, &dbl0, &Am[4*n*n], &n);
+        sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[3*n*n], &n, &Am[2*n*n], &n, &dbl0, &Am[4*n*n], &n, 1, 1);
         d10 = powf(snorm1(&Am[4*n*n], work_arr, n), 0.1);
     } else {
         test = snorm1est(&Am[0], 10);
@@ -535,8 +535,8 @@ pick_pade_structure_s(float* Am, const Py_ssize_t size_n, int* m, int* s)
     // 1-norm of A**27
     for (i = 0; i < 4; i++)
     {
-        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1);
-        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1);
+        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1, 1);
+        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1, 1);
     }
     temp = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > temp) { temp = work_arr[n+i]; } }
@@ -612,14 +612,14 @@ pick_pade_structure_d(double* Am, const Py_ssize_t size_n, int* m, int* s)
     }
 
     // First spin = normest(|A|, m=1)
-    dgemv_("N", &n, &n, &dbl1, absA, &n, work_arr, &int1, &dbl0, &work_arr[n], &int1);
+    dgemv_("N", &n, &n, &dbl1, absA, &n, work_arr, &int1, &dbl0, &work_arr[n], &int1, 1);
     normA = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > normA) { normA = work_arr[n+i]; } }
 
 
-    dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[0*n*n], &n, &Am[0*n*n], &n, &dbl0, &Am[1*n*n], &n);
-    dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[1*n*n], &n, &Am[1*n*n], &n, &dbl0, &Am[2*n*n], &n);
-    dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[2*n*n], &n, &Am[1*n*n], &n, &dbl0, &Am[3*n*n], &n);
+    dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[0*n*n], &n, &Am[0*n*n], &n, &dbl0, &Am[1*n*n], &n, 1, 1);
+    dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[1*n*n], &n, &Am[1*n*n], &n, &dbl0, &Am[2*n*n], &n, 1, 1);
+    dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[2*n*n], &n, &Am[1*n*n], &n, &dbl0, &Am[3*n*n], &n, 1, 1);
     d4 = pow(dnorm1(&Am[2*n*n], work_arr, n), 0.25);
     d6 = pow(dnorm1(&Am[3*n*n], work_arr, n), 1.0/6.0);
     eta0 = fmax(d4, d6);
@@ -633,8 +633,8 @@ pick_pade_structure_d(double* Am, const Py_ssize_t size_n, int* m, int* s)
     // absA * work_arr[:n] = work_arr[n:]
     for (i = 0; i < 3; i++)
     {
-        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1);
-        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1);
+        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1, 1);
+        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1, 1);
     }
     temp = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > temp) { temp = work_arr[n+i]; } }
@@ -652,8 +652,8 @@ pick_pade_structure_d(double* Am, const Py_ssize_t size_n, int* m, int* s)
     // 1-norm of A**11
     for (i = 0; i < 2; i++)
     {
-        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1);
-        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1);
+        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1, 1);
+        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1, 1);
     }
     temp = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > temp) { temp = work_arr[n+i]; } }
@@ -671,7 +671,7 @@ pick_pade_structure_d(double* Am, const Py_ssize_t size_n, int* m, int* s)
     // -------
     if (n < 400)
     {
-        dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[2*n*n], &n, &Am[2*n*n], &n, &dbl0, &Am[4*n*n], &n);
+        dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[2*n*n], &n, &Am[2*n*n], &n, &dbl0, &Am[4*n*n], &n, 1, 1);
         d8 = pow(dnorm1(&Am[4*n*n], work_arr, n), 0.125);
     } else {
         test = dnorm1est(&Am[0], 8);
@@ -685,8 +685,8 @@ pick_pade_structure_d(double* Am, const Py_ssize_t size_n, int* m, int* s)
     // 1-norm of A**15
     for (i = 0; i < 2; i++)
     {
-        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1);
-        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1);
+        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1, 1);
+        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1, 1);
     }
     temp = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > temp) { temp = work_arr[n+i]; } }
@@ -705,8 +705,8 @@ pick_pade_structure_d(double* Am, const Py_ssize_t size_n, int* m, int* s)
     // 1-norm of A**19
     for (i = 0; i < 2; i++)
     {
-        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1);
-        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1);
+        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1, 1);
+        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1, 1);
     }
     temp = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > temp) { temp = work_arr[n+i]; } }
@@ -717,7 +717,7 @@ pick_pade_structure_d(double* Am, const Py_ssize_t size_n, int* m, int* s)
     if ((eta2 < theta[3]) && lm == 0)
     {
         if (n >= 400) {
-            dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[2*n*n], &n, &Am[2*n*n], &n, &dbl0, &Am[4*n*n], &n);
+            dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[2*n*n], &n, &Am[2*n*n], &n, &dbl0, &Am[4*n*n], &n, 1, 1);
         }
         *m = 9;
         goto FREE_EXIT;
@@ -728,7 +728,7 @@ pick_pade_structure_d(double* Am, const Py_ssize_t size_n, int* m, int* s)
     // Scale-square
     if (n < 400)
     {
-        dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[3*n*n], &n, &Am[2*n*n], &n, &dbl0, &Am[4*n*n], &n);
+        dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[3*n*n], &n, &Am[2*n*n], &n, &dbl0, &Am[4*n*n], &n, 1, 1);
         d10 = pow(dnorm1(&Am[4*n*n], work_arr, n), 0.1);
     } else {
         test = dnorm1est(&Am[0], 10);
@@ -756,8 +756,8 @@ pick_pade_structure_d(double* Am, const Py_ssize_t size_n, int* m, int* s)
     // 1-norm of A**27
     for (i = 0; i < 4; i++)
     {
-        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1);
-        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1);
+        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1, 1);
+        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1, 1);
     }
     temp = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > temp) { temp = work_arr[n+i]; } }
@@ -835,14 +835,14 @@ pick_pade_structure_c(EXPM_C* Am, const Py_ssize_t size_n, int* m, int* s)
     }
 
     // First spin = normest(|A|, m=1)
-    sgemv_("N", &n, &n, &dbl1, absA, &n, work_arr, &int1, &dbl0, &work_arr[n], &int1);
+    sgemv_("N", &n, &n, &dbl1, absA, &n, work_arr, &int1, &dbl0, &work_arr[n], &int1, 1);
     normA = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > normA) { normA = work_arr[n+i]; } }
 
 
-    cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[0*n*n], &n, &Am[0*n*n], &n, &cdbl0, &Am[1*n*n], &n);
-    cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[1*n*n], &n, &Am[1*n*n], &n, &cdbl0, &Am[2*n*n], &n);
-    cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[2*n*n], &n, &Am[1*n*n], &n, &cdbl0, &Am[3*n*n], &n);
+    cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[0*n*n], &n, &Am[0*n*n], &n, &cdbl0, &Am[1*n*n], &n, 1, 1);
+    cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[1*n*n], &n, &Am[1*n*n], &n, &cdbl0, &Am[2*n*n], &n, 1, 1);
+    cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[2*n*n], &n, &Am[1*n*n], &n, &cdbl0, &Am[3*n*n], &n, 1, 1);
     d4 = powf(cnorm1(&Am[2*n*n], work_arr, n), 0.25);
     d6 = powf(cnorm1(&Am[3*n*n], work_arr, n), 1.0/6.0);
     eta0 = fmaxf(d4, d6);
@@ -856,8 +856,8 @@ pick_pade_structure_c(EXPM_C* Am, const Py_ssize_t size_n, int* m, int* s)
     // absA * work_arr[:n] = work_arr[n:]
     for (i = 0; i < 3; i++)
     {
-        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1);
-        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1);
+        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1, 1);
+        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1, 1);
     }
     temp = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > temp) { temp = work_arr[n+i]; } }
@@ -875,8 +875,8 @@ pick_pade_structure_c(EXPM_C* Am, const Py_ssize_t size_n, int* m, int* s)
     // 1-norm of A**11
     for (i = 0; i < 2; i++)
     {
-        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1);
-        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1);
+        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1, 1);
+        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1, 1);
     }
     temp = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > temp) { temp = work_arr[n+i]; } }
@@ -894,7 +894,7 @@ pick_pade_structure_c(EXPM_C* Am, const Py_ssize_t size_n, int* m, int* s)
     // -------
     if (n < 400)
     {
-        cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[2*n*n], &n, &Am[2*n*n], &n, &cdbl0, &Am[4*n*n], &n);
+        cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[2*n*n], &n, &Am[2*n*n], &n, &cdbl0, &Am[4*n*n], &n, 1, 1);
         d8 = powf(cnorm1(&Am[4*n*n], work_arr, n), 0.125);
     } else {
         test = cnorm1est(&Am[0], 8);
@@ -908,8 +908,8 @@ pick_pade_structure_c(EXPM_C* Am, const Py_ssize_t size_n, int* m, int* s)
     // 1-norm of A**15
     for (i = 0; i < 2; i++)
     {
-        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1);
-        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1);
+        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1, 1);
+        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1, 1);
     }
     temp = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > temp) { temp = work_arr[n+i]; } }
@@ -928,8 +928,8 @@ pick_pade_structure_c(EXPM_C* Am, const Py_ssize_t size_n, int* m, int* s)
     // 1-norm of A**19
     for (i = 0; i < 2; i++)
     {
-        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1);
-        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1);
+        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1, 1);
+        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1, 1);
     }
     temp = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > temp) { temp = work_arr[n+i]; } }
@@ -940,7 +940,7 @@ pick_pade_structure_c(EXPM_C* Am, const Py_ssize_t size_n, int* m, int* s)
     if ((eta2 < theta[3]) && lm == 0)
     {
         if (n >= 400) {
-            cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[2*n*n], &n, &Am[2*n*n], &n, &cdbl0, &Am[4*n*n], &n);
+            cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[2*n*n], &n, &Am[2*n*n], &n, &cdbl0, &Am[4*n*n], &n, 1, 1);
         }
         *m = 9;
         goto FREE_EXIT;
@@ -951,7 +951,7 @@ pick_pade_structure_c(EXPM_C* Am, const Py_ssize_t size_n, int* m, int* s)
     // Scale-square
     if (n < 400)
     {
-        cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[3*n*n], &n, &Am[2*n*n], &n, &cdbl0, &Am[4*n*n], &n);
+        cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[3*n*n], &n, &Am[2*n*n], &n, &cdbl0, &Am[4*n*n], &n, 1, 1);
         d10 = powf(cnorm1(&Am[4*n*n], work_arr, n), 0.1);
     } else {
         test = cnorm1est(&Am[0], 10);
@@ -979,8 +979,8 @@ pick_pade_structure_c(EXPM_C* Am, const Py_ssize_t size_n, int* m, int* s)
     // 1-norm of A**27
     for (i = 0; i < 4; i++)
     {
-        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1);
-        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1);
+        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1, 1);
+        sgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1, 1);
     }
     temp = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > temp) { temp = work_arr[n+i]; } }
@@ -1065,14 +1065,14 @@ pick_pade_structure_z(EXPM_Z* Am, const Py_ssize_t size_n, int* m, int* s)
     }
 
     // First spin = normest(|A|, m=1)
-    dgemv_("N", &n, &n, &dbl1, absA, &n, work_arr, &int1, &dbl0, &work_arr[n], &int1);
+    dgemv_("N", &n, &n, &dbl1, absA, &n, work_arr, &int1, &dbl0, &work_arr[n], &int1, 1);
     normA = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > normA) { normA = work_arr[n+i]; } }
 
 
-    zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[0*n*n], &n, &Am[0*n*n], &n, &cdbl0, &Am[1*n*n], &n);
-    zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[1*n*n], &n, &Am[1*n*n], &n, &cdbl0, &Am[2*n*n], &n);
-    zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[2*n*n], &n, &Am[1*n*n], &n, &cdbl0, &Am[3*n*n], &n);
+    zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[0*n*n], &n, &Am[0*n*n], &n, &cdbl0, &Am[1*n*n], &n, 1, 1);
+    zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[1*n*n], &n, &Am[1*n*n], &n, &cdbl0, &Am[2*n*n], &n, 1, 1);
+    zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[2*n*n], &n, &Am[1*n*n], &n, &cdbl0, &Am[3*n*n], &n, 1, 1);
     d4 = pow(znorm1(&Am[2*n*n], work_arr, n), 0.25);
     d6 = pow(znorm1(&Am[3*n*n], work_arr, n), 1.0/6.0);
     eta0 = fmax(d4, d6);
@@ -1086,8 +1086,8 @@ pick_pade_structure_z(EXPM_Z* Am, const Py_ssize_t size_n, int* m, int* s)
     // absA * work_arr[:n] = work_arr[n:]
     for (i = 0; i < 3; i++)
     {
-        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1);
-        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1);
+        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1, 1);
+        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1, 1);
     }
     temp = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > temp) { temp = work_arr[n+i]; } }
@@ -1105,8 +1105,8 @@ pick_pade_structure_z(EXPM_Z* Am, const Py_ssize_t size_n, int* m, int* s)
     // 1-norm of A**11
     for (i = 0; i < 2; i++)
     {
-        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1);
-        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1);
+        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1, 1);
+        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1, 1);
     }
     temp = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > temp) { temp = work_arr[n+i]; } }
@@ -1124,7 +1124,7 @@ pick_pade_structure_z(EXPM_Z* Am, const Py_ssize_t size_n, int* m, int* s)
     // -------
     if (n < 400)
     {
-        zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[2*n*n], &n, &Am[2*n*n], &n, &cdbl0, &Am[4*n*n], &n);
+        zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[2*n*n], &n, &Am[2*n*n], &n, &cdbl0, &Am[4*n*n], &n, 1, 1);
         d8 = pow(znorm1(&Am[4*n*n], work_arr, n), 0.125);
     } else {
         test = znorm1est(&Am[0], 8);
@@ -1138,8 +1138,8 @@ pick_pade_structure_z(EXPM_Z* Am, const Py_ssize_t size_n, int* m, int* s)
     // 1-norm of A**15
     for (i = 0; i < 2; i++)
     {
-        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1);
-        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1);
+        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1, 1);
+        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1, 1);
     }
     temp = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > temp) { temp = work_arr[n+i]; } }
@@ -1158,8 +1158,8 @@ pick_pade_structure_z(EXPM_Z* Am, const Py_ssize_t size_n, int* m, int* s)
     // 1-norm of A**19
     for (i = 0; i < 2; i++)
     {
-        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1);
-        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1);
+        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1, 1);
+        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1, 1);
     }
     temp = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > temp) { temp = work_arr[n+i]; } }
@@ -1172,7 +1172,7 @@ pick_pade_structure_z(EXPM_Z* Am, const Py_ssize_t size_n, int* m, int* s)
         // Add the deferred matmul for m=9
         if (n >= 400)
         {
-            zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[2*n*n], &n, &Am[2*n*n], &n, &cdbl0, &Am[4*n*n], &n);
+            zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[2*n*n], &n, &Am[2*n*n], &n, &cdbl0, &Am[4*n*n], &n, 1, 1);
         }
         *m = 9;
         goto FREE_EXIT;
@@ -1183,7 +1183,7 @@ pick_pade_structure_z(EXPM_Z* Am, const Py_ssize_t size_n, int* m, int* s)
     // Scale-square
     if (n < 400)
     {
-        zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[3*n*n], &n, &Am[2*n*n], &n, &cdbl0, &Am[4*n*n], &n);
+        zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[3*n*n], &n, &Am[2*n*n], &n, &cdbl0, &Am[4*n*n], &n, 1, 1);
         d10 = pow(znorm1(&Am[4*n*n], work_arr, n), 0.1);
     } else {
         test = znorm1est(&Am[0], 10);
@@ -1211,8 +1211,8 @@ pick_pade_structure_z(EXPM_Z* Am, const Py_ssize_t size_n, int* m, int* s)
     // 1-norm of A**27
     for (i = 0; i < 4; i++)
     {
-        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1);
-        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1);
+        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[n], &int1, &dbl0, &work_arr[0], &int1, 1);
+        dgemv_("N", &n, &n, &dbl1, absA, &n, &work_arr[0], &int1, &dbl0, &work_arr[n], &int1, 1);
     }
     temp = 0.0;
     for (i = 0; i < n; i++)  { if (work_arr[n+i] > temp) { temp = work_arr[n+i]; } }
@@ -1282,7 +1282,7 @@ pade_UV_calc_s(float* Am, const Py_ssize_t size_n, const int m, int* info)
 
         // U = Am[0] @ Am[1] + b[1]*Am[0]
         scopy_(&n2, Am, &int1, &Am[3*n2], &int1);
-        sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[n2], &n, Am, &n, &b[1], &Am[3*n2], &n);
+        sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[n2], &n, Am, &n, &b[1], &Am[3*n2], &n, 1, 1);
 
         // V = b[2]*Am[1] + b[0]*I_n
         sscal_(&n2, &b[2], &Am[n2], &int1);
@@ -1310,7 +1310,7 @@ pade_UV_calc_s(float* Am, const Py_ssize_t size_n, const int m, int* info)
             }
         }
         // Am[0] @ (1.0*Am[2] + 420*Am[1] + 15120*I)
-        sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[4*n2], &n, Am, &n, &dbl0, &Am[3*n2], &n);
+        sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[4*n2], &n, Am, &n, &dbl0, &Am[3*n2], &n, 1, 1);
 
         // V
         for (i = 0; i < n; i++)
@@ -1359,7 +1359,7 @@ pade_UV_calc_s(float* Am, const Py_ssize_t size_n, const int m, int* info)
         }
 
         // Now overwrite Am[3] with U
-        sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[4*n2], &n, Am, &n, &dbl0, &Am[3*n2], &n);
+        sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[4*n2], &n, Am, &n, &dbl0, &Am[3*n2], &n, 1, 1);
 
     } else if (m == 9) {
 
@@ -1395,7 +1395,7 @@ pade_UV_calc_s(float* Am, const Py_ssize_t size_n, const int m, int* info)
             }
         }
         // Now overwrite Am[3] with U
-        sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[4*n2], &n, Am, &n, &dbl0, &Am[3*n2], &n);
+        sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[4*n2], &n, Am, &n, &dbl0, &Am[3*n2], &n, 1, 1);
 
     } else if (m == 13) {
         b[0]  = 64764752532480000.0;
@@ -1450,11 +1450,11 @@ pade_UV_calc_s(float* Am, const Py_ssize_t size_n, const int m, int* info)
         }
 
         // V = P @ Q + R
-        sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[4*n2], &n, &Am[3*n2], &n, &dbl1, &Am[1*n2], &n);
+        sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[4*n2], &n, &Am[3*n2], &n, &dbl1, &Am[1*n2], &n, 1, 1);
 
         // U = K @ (L @ M + N)
-        sgemm_("N", "N", &n, &n, &n, &dbl1, work, &n, &Am[3*n2], &n, &dbl1, &Am[2*n2], &n);
-        sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[2*n2], &n, Am, &n, &dbl1, &Am[3*n2], &n);
+        sgemm_("N", "N", &n, &n, &n, &dbl1, work, &n, &Am[3*n2], &n, &dbl1, &Am[2*n2], &n, 1, 1);
+        sgemm_("N", "N", &n, &n, &n, &dbl1, &Am[2*n2], &n, Am, &n, &dbl1, &Am[3*n2], &n, 1, 1);
 
         PyMem_RawFree(work);
     }
@@ -1467,7 +1467,7 @@ pade_UV_calc_s(float* Am, const Py_ssize_t size_n, const int m, int* info)
     swap_cf_s(&Am[3*n2], &Am[2*n2], n, n, n);
 
     sgetrf_(&n, &n, &Am[n2], &n, ipiv, info);
-    sgetrs_("T", &n, &n, &Am[n2], &n, ipiv, &Am[2*n2], &n, info);
+    sgetrs_("T", &n, &n, &Am[n2], &n, ipiv, &Am[2*n2], &n, info, 1);
     PyMem_RawFree(ipiv);
     sscal_(&n2, &two, &Am[2*n2], &int1);
     for (i = 0; i < n; i++) { Am[2*n2 + n*i + i] += 1.0; }
@@ -1505,7 +1505,7 @@ pade_UV_calc_d(double* Am, const Py_ssize_t size_n, const int m, int* info)
 
         // U = Am[0] @ Am[1] + b[1]*Am[0]
         dcopy_(&n2, Am, &int1, &Am[3*n2], &int1);
-        dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[n2], &n, Am, &n, &b[1], &Am[3*n2], &n);
+        dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[n2], &n, Am, &n, &b[1], &Am[3*n2], &n, 1, 1);
 
         // V = b[2]*Am[1] + b[0]*I_n
         dscal_(&n2, &b[2], &Am[n2], &int1);
@@ -1534,7 +1534,7 @@ pade_UV_calc_d(double* Am, const Py_ssize_t size_n, const int m, int* info)
             }
         }
         // Am[0] @ (1.0*Am[2] + 420*Am[1] + 15120*I)
-        dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[4*n2], &n, Am, &n, &dbl0, &Am[3*n2], &n);
+        dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[4*n2], &n, Am, &n, &dbl0, &Am[3*n2], &n, 1, 1);
 
         // V
         for (i = 0; i < n; i++)
@@ -1583,7 +1583,7 @@ pade_UV_calc_d(double* Am, const Py_ssize_t size_n, const int m, int* info)
         }
 
         // Now overwrite Am[3] with U
-        dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[4*n2], &n, Am, &n, &dbl0, &Am[3*n2], &n);
+        dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[4*n2], &n, Am, &n, &dbl0, &Am[3*n2], &n, 1, 1);
 
     } else if (m == 9) {
 
@@ -1619,7 +1619,7 @@ pade_UV_calc_d(double* Am, const Py_ssize_t size_n, const int m, int* info)
             }
         }
         // Now overwrite Am[3] with U
-        dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[4*n2], &n, Am, &n, &dbl0, &Am[3*n2], &n);
+        dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[4*n2], &n, Am, &n, &dbl0, &Am[3*n2], &n, 1, 1);
 
     } else if (m == 13) {
         b[0]  = 64764752532480000.0;
@@ -1674,11 +1674,11 @@ pade_UV_calc_d(double* Am, const Py_ssize_t size_n, const int m, int* info)
         }
 
         // V = P @ Q + R
-        dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[4*n2], &n, &Am[3*n2], &n, &dbl1, &Am[n2], &n);
+        dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[4*n2], &n, &Am[3*n2], &n, &dbl1, &Am[n2], &n, 1, 1);
 
         // U = K @ (L @ M + N)
-        dgemm_("N", "N", &n, &n, &n, &dbl1, work, &n, &Am[3*n2], &n, &dbl1, &Am[2*n2], &n);
-        dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[2*n2], &n, Am, &n, &dbl1, &Am[3*n2], &n);
+        dgemm_("N", "N", &n, &n, &n, &dbl1, work, &n, &Am[3*n2], &n, &dbl1, &Am[2*n2], &n, 1, 1);
+        dgemm_("N", "N", &n, &n, &n, &dbl1, &Am[2*n2], &n, Am, &n, &dbl1, &Am[3*n2], &n, 1, 1);
 
         PyMem_RawFree(work);
     }
@@ -1691,7 +1691,7 @@ pade_UV_calc_d(double* Am, const Py_ssize_t size_n, const int m, int* info)
     swap_cf_d(&Am[3*n2], &Am[2*n2], n, n, n);
 
     dgetrf_(&n, &n, &Am[n2], &n, ipiv, info);
-    dgetrs_("T", &n, &n, &Am[n2], &n, ipiv, &Am[2*n2], &n, info);
+    dgetrs_("T", &n, &n, &Am[n2], &n, ipiv, &Am[2*n2], &n, info, 1);
     PyMem_RawFree(ipiv);
     dscal_(&n2, &two, &Am[2*n2], &int1);
     for (i = 0; i < n; i++) { Am[2*n2 + n*i + i] += 1.0; }
@@ -1736,7 +1736,7 @@ pade_UV_calc_c(EXPM_C* Am, const Py_ssize_t size_n, const int m, int* info)
 
         // U = Am[0] @ Am[1] + b[1]*Am[0]
         ccopy_(&n2, Am, &int1, &Am[3*n2], &int1);
-        cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[n2], &n, Am, &n, &cb1, &Am[3*n2], &n);
+        cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[n2], &n, Am, &n, &cb1, &Am[3*n2], &n, 1, 1);
 
         // V = b[2]*Am[1] + b[0]*I_n
         csscal_(&n2, &b[2], &Am[n2], &int1);
@@ -1779,7 +1779,7 @@ pade_UV_calc_c(EXPM_C* Am, const Py_ssize_t size_n, const int m, int* info)
         }
 
         // Am[0] @ (1.0*Am[2] + 420*Am[1] + 15120*I)
-        cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[4*n2], &n, Am, &n, &cdbl0, &Am[3*n2], &n);
+        cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[4*n2], &n, Am, &n, &cdbl0, &Am[3*n2], &n, 1, 1);
 
         // V
         for (i = 0; i < n; i++)
@@ -1854,7 +1854,7 @@ pade_UV_calc_c(EXPM_C* Am, const Py_ssize_t size_n, const int m, int* info)
         }
 
         // Now overwrite Am[3] with U
-        cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[4*n2], &n, Am, &n, &cdbl0, &Am[3*n2], &n);
+        cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[4*n2], &n, Am, &n, &cdbl0, &Am[3*n2], &n, 1, 1);
 
     } else if (m == 9) {
 
@@ -1916,7 +1916,7 @@ pade_UV_calc_c(EXPM_C* Am, const Py_ssize_t size_n, const int m, int* info)
         }
 
         // Now overwrite Am[3] with U
-        cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[4*n2], &n, Am, &n, &cdbl0, &Am[3*n2], &n);
+        cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[4*n2], &n, Am, &n, &cdbl0, &Am[3*n2], &n, 1, 1);
 
     } else if (m == 13) {
         b[0]  = 64764752532480000.0;
@@ -2010,11 +2010,11 @@ pade_UV_calc_c(EXPM_C* Am, const Py_ssize_t size_n, const int m, int* info)
         }
 
         // V = P @ Q + R
-        cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[4*n2], &n, &Am[3*n2], &n, &cdbl1, &Am[1*n2], &n);
+        cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[4*n2], &n, &Am[3*n2], &n, &cdbl1, &Am[1*n2], &n, 1, 1);
 
         // U = K @ (L @ M + N)
-        cgemm_("N", "N", &n, &n, &n, &cdbl1, work, &n, &Am[3*n2], &n, &cdbl1, &Am[2*n2], &n);
-        cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[2*n2], &n, Am, &n, &cdbl0, &Am[3*n2], &n);
+        cgemm_("N", "N", &n, &n, &n, &cdbl1, work, &n, &Am[3*n2], &n, &cdbl1, &Am[2*n2], &n, 1, 1);
+        cgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[2*n2], &n, Am, &n, &cdbl0, &Am[3*n2], &n, 1, 1);
 
         PyMem_RawFree(work);
     }
@@ -2027,7 +2027,7 @@ pade_UV_calc_c(EXPM_C* Am, const Py_ssize_t size_n, const int m, int* info)
     swap_cf_c(&Am[3*n2], &Am[2*n2], n, n, n);
 
     cgetrf_(&n, &n, &Am[n2], &n, ipiv, info);
-    cgetrs_("T", &n, &n, &Am[n2], &n, ipiv, &Am[2*n2], &n, info);
+    cgetrs_("T", &n, &n, &Am[n2], &n, ipiv, &Am[2*n2], &n, info, 1);
     PyMem_RawFree(ipiv);
     csscal_(&n2, &two, &Am[2*n2], &int1);
 
@@ -2075,7 +2075,7 @@ pade_UV_calc_z(EXPM_Z* Am, const Py_ssize_t size_n, const int m, int* info)
 
         // U = Am[0] @ Am[1] + b[1]*Am[0]
         zcopy_(&n2, Am, &int1, &Am[3*n2], &int1);
-        zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[n2], &n, Am, &n, &cb1, &Am[3*n2], &n);
+        zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[n2], &n, Am, &n, &cb1, &Am[3*n2], &n, 1, 1);
 
         // V = b[2]*Am[1] + b[0]*I_n
         zdscal_(&n2, &b[2], &Am[n2], &int1);
@@ -2115,7 +2115,7 @@ pade_UV_calc_z(EXPM_Z* Am, const Py_ssize_t size_n, const int m, int* info)
             }
         }
         // Am[0] @ (1.0*Am[2] + 420*Am[1] + 15120*I)
-        zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[4*n2], &n, Am, &n, &cdbl0, &Am[3*n2], &n);
+        zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[4*n2], &n, Am, &n, &cdbl0, &Am[3*n2], &n, 1, 1);
 
         // V
         for (i = 0; i < n; i++)
@@ -2190,7 +2190,7 @@ pade_UV_calc_z(EXPM_Z* Am, const Py_ssize_t size_n, const int m, int* info)
         }
 
         // Now overwrite Am[3] with U
-        zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[4*n2], &n, Am, &n, &cdbl0, &Am[3*n2], &n);
+        zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[4*n2], &n, Am, &n, &cdbl0, &Am[3*n2], &n, 1, 1);
 
     } else if (m == 9) {
 
@@ -2252,7 +2252,7 @@ pade_UV_calc_z(EXPM_Z* Am, const Py_ssize_t size_n, const int m, int* info)
         }
 
         // Now overwrite Am[3] with U
-        zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[4*n2], &n, Am, &n, &cdbl0, &Am[3*n2], &n);
+        zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[4*n2], &n, Am, &n, &cdbl0, &Am[3*n2], &n, 1, 1);
 
     } else if (m == 13) {
         b[0]  = 64764752532480000.0;
@@ -2346,11 +2346,11 @@ pade_UV_calc_z(EXPM_Z* Am, const Py_ssize_t size_n, const int m, int* info)
         }
 
         // V = P @ Q + R
-        zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[4*n2], &n, &Am[3*n2], &n, &cdbl1, &Am[1*n2], &n);
+        zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[4*n2], &n, &Am[3*n2], &n, &cdbl1, &Am[1*n2], &n, 1, 1);
 
         // U = K @ (L @ M + N)
-        zgemm_("N", "N", &n, &n, &n, &cdbl1, work, &n, &Am[3*n2], &n, &cdbl1, &Am[2*n2], &n);
-        zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[2*n2], &n, Am, &n, &cdbl0, &Am[3*n2], &n);
+        zgemm_("N", "N", &n, &n, &n, &cdbl1, work, &n, &Am[3*n2], &n, &cdbl1, &Am[2*n2], &n, 1, 1);
+        zgemm_("N", "N", &n, &n, &n, &cdbl1, &Am[2*n2], &n, Am, &n, &cdbl0, &Am[3*n2], &n, 1, 1);
 
         PyMem_RawFree(work);
     }
@@ -2362,7 +2362,7 @@ pade_UV_calc_z(EXPM_Z* Am, const Py_ssize_t size_n, const int m, int* info)
     swap_cf_z(&Am[3*n2], &Am[2*n2], n, n, n);
 
     zgetrf_(&n, &n, &Am[n2], &n, ipiv, info);
-    zgetrs_("T", &n, &n, &Am[n2], &n, ipiv, &Am[2*n2], &n, info);
+    zgetrs_("T", &n, &n, &Am[n2], &n, ipiv, &Am[2*n2], &n, info, 1);
     PyMem_RawFree(ipiv);
     zdscal_(&n2, &two, &Am[2*n2], &int1);
 
