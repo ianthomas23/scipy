@@ -262,15 +262,15 @@ extern void    ccheck_tempv(int, singlecomplex *);
 
 /*! \brief BLAS */
 
-extern int cgemm_(const char*, const char*, const int*, const int*, const int*,
+extern void cgemm_(const char*, const char*, const int*, const int*, const int*,
                   const singlecomplex*, const singlecomplex*, const int*, const singlecomplex*,
-		  const int*, const singlecomplex*, singlecomplex*, const int*);
-extern int ctrsv_(char*, char*, char*, int*, singlecomplex*, int*,
-                  singlecomplex*, int*);
-extern int ctrsm_(char*, char*, char*, char*, int*, int*,
-                  singlecomplex*, singlecomplex*, int*, singlecomplex*, int*);
-extern int cgemv_(char *, int *, int *, singlecomplex *, singlecomplex *a, int *,
-                  singlecomplex *, int *, singlecomplex *, singlecomplex *, int *);
+		  const int*, const singlecomplex*, singlecomplex*, const int*, int, int);
+extern void ctrsv_(char*, char*, char*, int*, singlecomplex*, int*,
+                  singlecomplex*, int*, int, int, int);
+extern void ctrsm_(char*, char*, char*, char*, int*, int*,
+                  singlecomplex*, singlecomplex*, int*, singlecomplex*, int*, int, int, int, int);
+extern void cgemv_(char *, int *, int *, singlecomplex *, singlecomplex *a, int *,
+                  singlecomplex *, int *, singlecomplex *, singlecomplex *, int *, int);
 
 extern void cusolve(int, int, singlecomplex*, singlecomplex*);
 extern void clsolve(int, int, singlecomplex*, singlecomplex*);

@@ -175,8 +175,8 @@ sgsrfs(trans_t trans, SuperMatrix *A, SuperMatrix *L, SuperMatrix *U,
     extern int SCOPY(int *, float *, int *, float *, int *);
     extern int SSAXPY(int *, float *, float *, int *, float *, int *);
 #else
-    extern int scopy_(int *, float *, int *, float *, int *);
-    extern int saxpy_(int *, float *, float *, int *, float *, int *);
+    extern void scopy_(int *, float *, int *, float *, int *);
+    extern void saxpy_(int *, float *, float *, int *, float *, int *);
 #endif
 
     Astore = A->Store;
