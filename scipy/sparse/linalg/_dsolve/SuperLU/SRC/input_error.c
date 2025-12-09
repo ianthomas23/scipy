@@ -42,8 +42,9 @@ at the top-level directory.
  *
  * </pre>
  */
-void input_error(char *srname, int *info)
+int input_error(char *srname, int *info)
 {
     printf("** On entry to %6s, parameter number %2d had an illegal value\n",
 		srname, *info);
+    return 0;
 }
