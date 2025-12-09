@@ -40,15 +40,15 @@ subroutine <prefix>gttrf(n, dl, d, du, du2, ipiv, info)
 end subroutine <prefix>gttrf
 
 
-subroutine <prefix>gttrs(trans, n, nrhs, dl, d, du, du2, ipiv, b, ldb, info)
+subroutine <prefix>gttrs(trans, n, nrhs, dl, d, du, du2, ipiv, b, ldb, info,len0)
     ! x, info  = gttrs(dl, d, du, du2, ipiv, b, trans="N", overwrite_b=0)
     !
     ! ?GTTRS solves one of the systems of equations:
     ! A*X = B  or  A**T*X = B,
     ! with a tridiagonal matrix A using the LU factorization computed
     ! by ?GTTRF.
-    callstatement (*f2py_func)(trans, &n, &nrhs, dl, d, du, du2, ipiv, b, &ldb, &info)
-    callprotoargument char*, F_INT*, F_INT*, <ctype>*, <ctype>*, <ctype>*, <ctype>*, F_INT*, <ctype>*, F_INT*, F_INT*
+    callstatement (*f2py_func)(trans, &n, &nrhs, dl, d, du, du2, ipiv, b, &ldb, &info,len0)
+    callprotoargument char*, F_INT*, F_INT*, <ctype>*, <ctype>*, <ctype>*, <ctype>*, F_INT*, <ctype>*, F_INT*, F_INT*,F_INT
     threadsafe
 
     character optional, intent(in), check(*trans=='N'||*trans=='T'||*trans=='C') :: trans = "N"
@@ -63,18 +63,19 @@ subroutine <prefix>gttrs(trans, n, nrhs, dl, d, du, du2, ipiv, b, ldb, info)
     <ftype> intent(in, out, copy, out=x), dimension(ldb, nrhs) :: b
     integer intent(out) :: info
 
+    integer intent(hide) :: len0 = 1
 end subroutine gttrs
 
 
-subroutine <prefix2>gtcon(norm,n,dl,d,du,du2,ipiv,anorm,rcond,work,iwork,info)
+subroutine <prefix2>gtcon(norm,n,dl,d,du,du2,ipiv,anorm,rcond,work,iwork,info,len0)
     ! ?GTCON estimates the reciprocal of the condition number of a real
     ! tridiagonal matrix A using the LU factorization as computed by
     ! ?GTTRF.
     ! An estimate is obtained for norm(inv(A)), and the reciprocal of the
     ! condition number is computed as RCOND = 1 / (ANORM * norm(inv(A))).
     threadsafe
-    callstatement (*f2py_func)(norm,&n,dl,d,du,du2,ipiv,&anorm,&rcond,work,iwork,&info)
-    callprotoargument char*, F_INT*, <ctype2>*, <ctype2>*, <ctype2>*, <ctype2>*, F_INT*, <ctype2>*, <ctype2>*, <ctype2>*, F_INT*, F_INT*
+    callstatement (*f2py_func)(norm,&n,dl,d,du,du2,ipiv,&anorm,&rcond,work,iwork,&info,len0)
+    callprotoargument char*, F_INT*, <ctype2>*, <ctype2>*, <ctype2>*, <ctype2>*, F_INT*, <ctype2>*, <ctype2>*, <ctype2>*, F_INT*, F_INT*,F_INT
 
     character optional, intent(in) :: norm = '1'
     integer intent(hide), depend(d) :: n = max(3, len(d))
@@ -89,18 +90,19 @@ subroutine <prefix2>gtcon(norm,n,dl,d,du,du2,ipiv,anorm,rcond,work,iwork,info)
     integer intent(hide, cache), dimension(n), depend(n) :: iwork
     integer intent(out) :: info
 
+    integer intent(hide) :: len0 = 1
 end subroutine <prefix2>gtcon
 
 
-subroutine <prefix2c>gtcon(norm,n,dl,d,du,du2,ipiv,anorm,rcond,work,info)
+subroutine <prefix2c>gtcon(norm,n,dl,d,du,du2,ipiv,anorm,rcond,work,info,len0)
     ! ?GTCON estimates the reciprocal of the condition number of a real
     ! tridiagonal matrix A using the LU factorization as computed by
     ! ?GTTRF.
     ! An estimate is obtained for norm(inv(A)), and the reciprocal of the
     ! condition number is computed as RCOND = 1 / (ANORM * norm(inv(A))).
     threadsafe
-    callstatement (*f2py_func)(norm,&n,dl,d,du,du2,ipiv,&anorm,&rcond,work,&info)
-    callprotoargument char*, F_INT*, <ctype2c>*, <ctype2c>*, <ctype2c>*, <ctype2c>*, F_INT*, <ctype2>*, <ctype2>*, <ctype2c>*, F_INT*
+    callstatement (*f2py_func)(norm,&n,dl,d,du,du2,ipiv,&anorm,&rcond,work,&info,len0)
+    callprotoargument char*, F_INT*, <ctype2c>*, <ctype2c>*, <ctype2c>*, <ctype2c>*, F_INT*, <ctype2>*, <ctype2>*, <ctype2c>*, F_INT*,F_INT
 
     character optional, intent(in) :: norm = '1'
     integer intent(hide), depend(d) :: n = max(3, len(d))
@@ -114,10 +116,11 @@ subroutine <prefix2c>gtcon(norm,n,dl,d,du,du2,ipiv,anorm,rcond,work,info)
     <ftype2c> intent(hide, cache), dimension(2*n), depend(n) :: work
     integer intent(out) :: info
 
+    integer intent(hide) :: len0 = 1
 end subroutine <prefix2c>gtcon
 
 
-subroutine <prefix2>gtsvx(fact,trans,n,nrhs,dl,d,du,dlf,df,duf,du2,ipiv,b,ldb,x,ldx,rcond,ferr,berr,work,iwork,info)
+subroutine <prefix2>gtsvx(fact,trans,n,nrhs,dl,d,du,dlf,df,duf,du2,ipiv,b,ldb,x,ldx,rcond,ferr,berr,work,iwork,info,len0,len1)
     ! ?GTSVX uses the LU factorization to compute the solution to a real
     ! system of linear equations A * X = B or A**T * X = B,
     ! where A is a tridiagonal matrix of order N and X and B are N-by-NRHS
@@ -125,8 +128,8 @@ subroutine <prefix2>gtsvx(fact,trans,n,nrhs,dl,d,du,dlf,df,duf,du2,ipiv,b,ldb,x,
     !
     ! Error bounds on the solution and a condition estimate are also
     !provided.
-    callstatement (*f2py_func)(fact,trans,&n,&nrhs,dl,d,du,dlf,df,duf,du2,ipiv,b,&ldb,x,&ldx,&rcond,ferr,berr,work,iwork,&info);
-    callprotoargument char*,char*,F_INT*,F_INT*,<ctype2>*,<ctype2>*,<ctype2>*,<ctype2>*,<ctype2>*,<ctype2>*,<ctype2>*,F_INT*,<ctype2>*,F_INT*,<ctype2>*,F_INT*,<ctype2>*,<ctype2>*,<ctype2>*,<ctype2>*,F_INT*,F_INT*
+    callstatement (*f2py_func)(fact,trans,&n,&nrhs,dl,d,du,dlf,df,duf,du2,ipiv,b,&ldb,x,&ldx,&rcond,ferr,berr,work,iwork,&info,len0,len1);
+    callprotoargument char*,char*,F_INT*,F_INT*,<ctype2>*,<ctype2>*,<ctype2>*,<ctype2>*,<ctype2>*,<ctype2>*,<ctype2>*,F_INT*,<ctype2>*,F_INT*,<ctype2>*,F_INT*,<ctype2>*,<ctype2>*,<ctype2>*,<ctype2>*,F_INT*,F_INT*,F_INT,F_INT
 
     character optional, intent(in), check(*fact=='F'||*fact=='N') :: fact = 'N'
     character optional, intent(in), check(*trans=='N'||*trans=='C'||*trans=='T') :: trans = 'N'
@@ -151,10 +154,12 @@ subroutine <prefix2>gtsvx(fact,trans,n,nrhs,dl,d,du,dlf,df,duf,du2,ipiv,b,ldb,x,
     integer intent(hide, cache), dimension(n), depend(n) :: iwork
     integer intent(out) :: info
 
+    integer intent(hide) :: len0 = 1
+    integer intent(hide) :: len1 = 1
 end subroutine <prefix2>gtsvx
 
 
-subroutine <prefix2c>gtsvx(fact,trans,n,nrhs,dl,d,du,dlf,df,duf,du2,ipiv,b,ldb,x,ldx,rcond,ferr,berr,work,rwork,info)
+subroutine <prefix2c>gtsvx(fact,trans,n,nrhs,dl,d,du,dlf,df,duf,du2,ipiv,b,ldb,x,ldx,rcond,ferr,berr,work,rwork,info,len0,len1)
     ! ?GTSVX uses the LU factorization to compute the solution to a
     ! complex system of linear equations A * X = B or A**T * X = B,
     ! where A is a tridiagonal matrix of order N and X and B are N-by-NRHS
@@ -162,8 +167,8 @@ subroutine <prefix2c>gtsvx(fact,trans,n,nrhs,dl,d,du,dlf,df,duf,du2,ipiv,b,ldb,x
     !
     ! Error bounds on the solution and a condition estimate are also
     !provided.
-    callstatement (*f2py_func)(fact,trans,&n,&nrhs,dl,d,du,dlf,df,duf,du2,ipiv,b,&ldb,x,&ldx,&rcond,ferr,berr,work,rwork,&info);
-    callprotoargument char*,char*,F_INT*,F_INT*,<ctype2c>*,<ctype2c>*,<ctype2c>*,<ctype2c>*,<ctype2c>*,<ctype2c>*,<ctype2c>*,F_INT*,<ctype2c>*,F_INT*,<ctype2c>*,F_INT*,<ctype2>*,<ctype2>*,<ctype2>*,<ctype2c>*,<ctype2>*,F_INT*
+    callstatement (*f2py_func)(fact,trans,&n,&nrhs,dl,d,du,dlf,df,duf,du2,ipiv,b,&ldb,x,&ldx,&rcond,ferr,berr,work,rwork,&info,len0,len1);
+    callprotoargument char*,char*,F_INT*,F_INT*,<ctype2c>*,<ctype2c>*,<ctype2c>*,<ctype2c>*,<ctype2c>*,<ctype2c>*,<ctype2c>*,F_INT*,<ctype2c>*,F_INT*,<ctype2c>*,F_INT*,<ctype2>*,<ctype2>*,<ctype2>*,<ctype2c>*,<ctype2>*,F_INT*,F_INT,F_INT
 
     character optional, intent(in), check(*fact=='F'||*fact=='N') :: fact = 'N'
     character optional, intent(in), check(*trans=='N'||*trans=='C'||*trans=='T') :: trans = 'N'
@@ -188,4 +193,6 @@ subroutine <prefix2c>gtsvx(fact,trans,n,nrhs,dl,d,du,dlf,df,duf,du2,ipiv,b,ldb,x
     <ftype2> intent(hide,cache),dimension(n),depend(n) :: rwork
     integer intent(out) :: info
 
+    integer intent(hide) :: len0 = 1
+    integer intent(hide) :: len1 = 1
 end subroutine <prefix2c>gtsvx
