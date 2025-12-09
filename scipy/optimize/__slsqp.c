@@ -168,7 +168,7 @@ ITER_START:
 
     // Update multipliers for L1-test
     for (int i = 0; i < n; i++) { v[i] = gradx[i]; }
-    dgemv_("T", &m, &n, &dmone, C, &lda, mult, &one, &done, v, &one);
+    dgemv_("T", &m, &n, &dmone, C, &lda, mult, &one, &done, v, &one, 1);
 
     S->f0 = *funx;
     for (int i = 0; i < n; i++) { x0[i] = sol[i]; }
@@ -305,7 +305,7 @@ MODEM1:
     // u[i] = gradx[i] - C.T @ mult - v[i]
 
     for (int i = 0; i < n; i++) { u[i] = gradx[i]; }
-    dgemv_("T", &m, &n, &dmone, C, &lda, mult, &one, &done, u, &one);
+    dgemv_("T", &m, &n, &dmone, C, &lda, mult, &one, &done, u, &one, 1);
     for (int i = 0; i < n; i++)
     {
         u[i] = u[i] - v[i];
@@ -313,7 +313,7 @@ MODEM1:
 
     // L'*S
     for (int i = 0; i < n; i++) { v[i] = s[i]; }
-    dtpmv_("L", "T", "U", &n, bfgs, v, &one);
+    dtpmv_("L", "T", "U", &n, bfgs, v, &one, 1, 1, 1);
 
     // D*L'*S
     j = 0;
@@ -323,7 +323,7 @@ MODEM1:
     }
 
     // L*D*L'*S
-    dtpmv_("L", "N", "U", &n, bfgs, v, &one);
+    dtpmv_("L", "N", "U", &n, bfgs, v, &one, 1, 1, 1);
 
     S->h1 = ddot_(&n, s, &one, u, &one);
     S->h2 = ddot_(&n, s, &one, v, &one);
@@ -462,7 +462,7 @@ void lsq(
 
     // Compute b = - 1/sqrt(d[]) * inv(Lf[]) * gradx[]. Lf is already in packed format.
     for (int i = 0; i < n; i++) { wb[i] = gradx[i]; }
-    dtpsv_("L", "N", "U", &n, Lf, wb, &one);
+    dtpsv_("L", "N", "U", &n, Lf, wb, &one, 1, 1, 1);
     cursor = 0;
     for (int i = 0; i < n; i++)
     {
@@ -678,8 +678,8 @@ lsei(int ma, int me, int mg, int n,
     dgerq2_(&me, &n, e, &lde, tau, lsi_scratch, &info);
 
     // Right triangularize E and apply Q.T to A and G from the right.
-    dormr2_("R", "T", &ma, &n, &me, e, &lde, tau, a, &ma, lsi_scratch, &info);
-    dormr2_("R", "T", &mg, &n, &me, e, &lde, tau, g, &ldg, lsi_scratch, &info);
+    dormr2_("R", "T", &ma, &n, &me, e, &lde, tau, a, &ma, lsi_scratch, &info, 1, 1);
+    dormr2_("R", "T", &mg, &n, &me, e, &lde, tau, g, &ldg, lsi_scratch, &info, 1, 1);
 
     // Check the diagonal elements of E for rank deficiency.
     for (int i = 0; i < me; i++)
@@ -689,7 +689,7 @@ lsei(int ma, int me, int mg, int n,
     // Solve E*x = f and modify b.
     // Note: RQ forms R at the right of E instead of [0, 0] position.
     for (int i = 0; i < me; i++) { x[nvars + i] = f[i]; }
-    dtrsv_("U", "N", "N", &me, &e[(nvars)*me], &lde, &x[nvars], &one);
+    dtrsv_("U", "N", "N", &me, &e[(nvars)*me], &lde, &x[nvars], &one, 1, 1, 1);
 
     *mode = 1;
     // Zero out the inequality multiplier.
@@ -702,7 +702,7 @@ lsei(int ma, int me, int mg, int n,
     // Copy b into wb
     for (int i = 0; i < ma; i++) { wb[i] = b[i]; }
     // Compute wb -= A1*xe
-    dgemv_("N", &ma, &me, &dmone, &a[ma*nvars], &ma, &x[nvars], &one, &done, wb, &one);
+    dgemv_("N", &ma, &me, &dmone, &a[ma*nvars], &ma, &x[nvars], &one, &done, wb, &one, 1);
 
     // Store the transformed A2 and G2 in the buffer
     for (int j = 0; j < nvars; j++)
@@ -734,7 +734,7 @@ lsei(int ma, int me, int mg, int n,
         for (int i = 0; i < nvars; i++) { x[i] = wb[i]; }
 
         // Compute the residual and its norm, use a since a2 is overwritten.
-        dgemv_("N", &ma, &nvars, &done, a, &ma, x, &one, &dmone, wb_orig, &one);
+        dgemv_("N", &ma, &nvars, &done, a, &ma, x, &one, &dmone, wb_orig, &one, 1);
         *xnorm = dnrm2_(&ma, wb_orig, &one);
 
         *mode = 7;
@@ -745,7 +745,7 @@ lsei(int ma, int me, int mg, int n,
 
     // Modify h, and solve the inequality constrained least squares problem.
     // h -= G1*xe
-    dgemv_("N", &mg, &me, &dmone, &g[mg*nvars], &ldg, &x[nvars], &one, &done, h, &one);
+    dgemv_("N", &mg, &me, &dmone, &g[mg*nvars], &ldg, &x[nvars], &one, &done, h, &one, 1);
 
     lsi(ma, mg, nvars, a2, wb, g2, h, x, lsi_scratch, jw, xnorm, mode);
 
@@ -763,17 +763,17 @@ lsei(int ma, int me, int mg, int n,
 ORIGINAL_BASIS:
     // Convert the solution and multipliers to the original basis.
     // b = A*x - b (residuals)
-    dgemv_("N", &ma, &n, &done, a, &ma, x, &one, &dmone, b, &one);
+    dgemv_("N", &ma, &n, &done, a, &ma, x, &one, &dmone, b, &one, 1);
     // f = A1^T*b - G1^T*w
-    dgemv_("T", &ma, &me, &done, &a[nvars*ma], &ma, b, &one, &dzero, f, &one);
-    dgemv_("T", &mg, &me, &dmone, &g[nvars*mg], &ldg, gmults, &one, &done, f, &one);
+    dgemv_("T", &ma, &me, &done, &a[nvars*ma], &ma, b, &one, &dzero, f, &one, 1);
+    dgemv_("T", &mg, &me, &dmone, &g[nvars*mg], &ldg, gmults, &one, &done, f, &one, 1);
 
     // x = Q.T*x
-    dormr2_("L", "T", &n, &one, &me, e, &lde, tau, x, &n, lsi_scratch, &info);
+    dormr2_("L", "T", &n, &one, &me, e, &lde, tau, x, &n, lsi_scratch, &info, 1, 1);
 
     // Solve the triangular system for the equality multipliers, emults.
     for (int i = 0; i < me; i++) { emults[i] = f[i]; }
-    dtrsv_("U", "T", "N", &me, &e[(n - me)*me], &lde, emults, &one);
+    dtrsv_("U", "T", "N", &me, &e[(n - me)*me], &lde, emults, &one, 1, 1, 1);
 
     return;
 }
@@ -813,7 +813,7 @@ lsi(int ma, int mg, int n, double* restrict a, double* restrict b, double* restr
     dgeqr2_(&ma, &n, a, &ma, buffer, &buffer[tmp_int], &info);
 
     // Compute Q^T b
-    dorm2r_("L", "T", &ma, &one, &tmp_int, a, &ma, buffer, b, &ma, &buffer[tmp_int], &info);
+    dorm2r_("L", "T", &ma, &one, &tmp_int, a, &ma, buffer, b, &ma, &buffer[tmp_int], &info, 1, 1);
 
     // Check the diagonal elements of R for rank deficiency.
     *mode = 5;
@@ -826,9 +826,9 @@ lsi(int ma, int mg, int n, double* restrict a, double* restrict b, double* restr
     // The result is stored in G.
     // Note: There is an inherent assumption that ma >= n. This is a bug carried
     // over here from the original slsqp implementation.
-    dtrsm_("R", "U", "N", "N", &mg, &n, &done, a, &ma, g, &mg);
+    dtrsm_("R", "U", "N", "N", &mg, &n, &done, a, &ma, g, &mg, 1, 1, 1, 1);
     // h = h - Xf
-    dgemv_("N", &mg, &n, &dmone, g, &mg, b, &one, &done, h, &one);
+    dgemv_("N", &mg, &n, &dmone, g, &mg, b, &one, &done, h, &one, 1);
 
     // Solve the LDP problem.
     ldp(mg, n, g, h, x, buffer, jw, xnorm, mode);
@@ -836,7 +836,7 @@ lsi(int ma, int mg, int n, double* restrict a, double* restrict b, double* restr
 
     // Convert to the solution of the original problem.
     daxpy_(&n, &done, b, &one, x, &one);
-    dtrsv_("U", "N", "N", &n, a, &ma, x, &one);
+    dtrsv_("U", "N", "N", &n, a, &ma, x, &one, 1, 1, 1);
 
     // If any, compute the norm of the tail of b and add to xnorm
     tmp_int = ma - n;
@@ -911,7 +911,7 @@ ldp(int m, int n, double* restrict g, double* restrict h, double* restrict x,
     if (!((1.0 + fac) - 1.0 > 0.0)) { return; }
     *mode = 1;
     fac = 1.0 / fac;
-    dgemv_("T", &m, &n, &fac, g, &m, y, &one, &dzero, x, &one);
+    dgemv_("T", &m, &n, &fac, g, &m, y, &one, &dzero, x, &one, 1);
     *xnorm = dnrm2_(&n, x, &one);
 
     // Compute the lagrange multipliers for the primal problem

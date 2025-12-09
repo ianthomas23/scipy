@@ -21,8 +21,8 @@ double dnrm2_(int* n, double* x, int* incx);
 double ddot_(int* n, double* x, int* incx, double* y, int* incy);
 
 // LAPACK
-void dpotrf_(char* uplo, int* n, double* a, int* lda, int* info);
-void dtrtrs_(char* uplo, char* trans, char* diag, int* n, int* nrhs, double* a, int* lda, double* b, int* ldb, int* info);
+void dpotrf_(char* uplo, int* n, double* a, int* lda, int* info, int);
+void dtrtrs_(char* uplo, char* trans, char* diag, int* n, int* nrhs, double* a, int* lda, double* b, int* ldb, int* info, int, int, int);
 
 static PyObject* lbfgsb_error;
 

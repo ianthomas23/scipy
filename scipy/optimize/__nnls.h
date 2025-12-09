@@ -3,7 +3,7 @@
 #include <math.h>
 
 double ddot_(int* n, double* dx, int* incx, double* dy, int* incy);
-void dlarf_(char* side, int* m, int* n, double* v, int* incv, double* tau, double* c, int* ldc, double* work);
+void dlarf_(char* side, int* m, int* n, double* v, int* incv, double* tau, double* c, int* ldc, double* work, int);
 void dlarfgp_(int* n, double* alpha, double* x, int* incx, double* tau);
 void dlartgp_(double* f, double* g, double* cs, double* sn, double* r);
 double dnrm2_(int* n, double* x, int* incx);

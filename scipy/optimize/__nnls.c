@@ -87,7 +87,7 @@ __nnls(const int m, const int n, double* restrict a, double* restrict b,
                 tmpint = m - indz;
                 pivot2 = a[indz + j*m];
                 a[indz + j*m] = 1.0;
-                dlarf_("L", &tmpint, &one, &a[indz + j*m], &one, &tau, &zz[indz], &tmpint, &tmp_work);
+                dlarf_("L", &tmpint, &one, &a[indz + j*m], &one, &tau, &zz[indz], &tmpint, &tmp_work, 1);
                 // See if ztest is positive. This is from the original F77 code.
                 // Probably better to use a sign test instead of a division.
                 ztest = zz[indz] / pivot;
@@ -119,7 +119,7 @@ __nnls(const int m, const int n, double* restrict a, double* restrict b,
             for (k = indz; k < n; k++)
             {
                 jj = indices[k];
-                dlarf_("L", &tmpint, &one, &a[indz - 1 + j*m], &one, &tau, &a[indz - 1 + jj*m], &tmpint, &tmp_work);
+                dlarf_("L", &tmpint, &one, &a[indz - 1 + j*m], &one, &tau, &a[indz - 1 + jj*m], &tmpint, &tmp_work, 1);
             }
         }
         // Restore the pivot element into a, zero the subdiagonal elements in col j
