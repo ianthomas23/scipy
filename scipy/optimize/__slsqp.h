@@ -55,21 +55,21 @@ static PyObject* slsqp_error;
 void daxpy_(int* n, double* sa, double* sx, int* incx, double* sy, int* incy);
 double ddot_(int* n, double* dx, int* incx, double* dy, int* incy);
 void dgelsy_(int* m, int* n, int* nrhs, double* a, int* lda, double* b, int* ldb, int* jpvt, double* rcond, int* rank, double* work, int* lwork, int* info);
-void dgemv_(char* trans, int* m, int* n, double* alpha, double* a, int* lda, double* x, int* incx, double* beta, double* y, int* incy);
+void dgemv_(char* trans, int* m, int* n, double* alpha, double* a, int* lda, double* x, int* incx, double* beta, double* y, int* incy, int);
 void dgeqr2_(int* m, int* n, double* a, int* lda, double* tau, double* work, int* info);
 void dgeqrf_(int* m, int* n, double* a, int* lda, double* tau, double* work, double* lwork, int* info);
 void dgerq2_(int* m, int* n, double* a, int* lda, double* tau, double* work, int* info);
-void dlarf_(char* side, int* m, int* n, double* v, int* incv, double* tau, double* c, int* ldc, double* work);
+void dlarf_(char* side, int* m, int* n, double* v, int* incv, double* tau, double* c, int* ldc, double* work, int);
 void dlarfgp_(int* n, double* alpha, double* x, int* incx, double* tau);
 void dlartgp_(double* f, double* g, double* cs, double* sn, double* r);
 double dnrm2_(int* n, double* x, int* incx);
-void dorm2r_(char* side, char* trans, int* m, int* n, int* k, double* a, int* lda, double* tau, double* c, int* ldc, double* work, int* info);
-void dormr2_(char* side, char* trans, int* m, int* n, int* k, double* a, int* lda, double* tau, double* c, int* ldc, double* work, int* info);
+void dorm2r_(char* side, char* trans, int* m, int* n, int* k, double* a, int* lda, double* tau, double* c, int* ldc, double* work, int* info, int, int);
+void dormr2_(char* side, char* trans, int* m, int* n, int* k, double* a, int* lda, double* tau, double* c, int* ldc, double* work, int* info, int, int);
 void dscal_(int* n, double* da, double* dx, int* incx);
-void dtpmv_(char* uplo, char* trans, char* diag, int* n, double* ap, double* x, int* incx);
-void dtpsv_(char* uplo, char* trans, char* diag, int* n, double* ap, double* x, int* incx);
-void dtrsm_(char* side, char* uplo, char* transa, char* diag, int* m, int* n, double* alpha, double* a, int* lda, double* b, int* ldb);
-void dtrsv_(char* uplo, char* trans, char* diag, int* n, double* a, int* lda, double* x, int* incx);
+void dtpmv_(char* uplo, char* trans, char* diag, int* n, double* ap, double* x, int* incx, int, int, int);
+void dtpsv_(char* uplo, char* trans, char* diag, int* n, double* ap, double* x, int* incx, int, int, int);
+void dtrsm_(char* side, char* uplo, char* transa, char* diag, int* m, int* n, double* alpha, double* a, int* lda, double* b, int* ldb, int, int, int, int);
+void dtrsv_(char* uplo, char* trans, char* diag, int* n, double* a, int* lda, double* x, int* incx, int, int, int);
 
 
 // The SLSQP_vars struct holds the state of the algorithm and passed to Python
