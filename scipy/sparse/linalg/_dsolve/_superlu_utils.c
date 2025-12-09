@@ -234,23 +234,26 @@ PyTypeObject SuperLUGlobalType = {
  * Stub for error handling; does nothing, as we don't want to spew debug output.
  */
 
-int input_error(char *srname, int *info)
-{
-    return 0;
-}
+// NOTE: Avoid duplicate symbol
+//int input_error(char *srname, int *info)
+//{
+//    return 0;
+//}
 
 /*
  * Stubs for Harwell Subroutine Library functions that SuperLU tries to call.
  */
 
-void mc64id_(int *a)
+int mc64id_(int *a)
 {
     superlu_python_module_abort("chosen functionality not available");
+    return 0;
 }
 
-void mc64ad_(int *a, int *b, int *c, int d[], int e[], double f[],
+int mc64ad_(int *a, int *b, int *c, int d[], int e[], double f[],
 	     int *g, int h[], int *i, int j[], int *k, double l[],
 	     int m[], int n[])
 {
     superlu_python_module_abort("chosen functionality not available");
+    return 0;
 }
