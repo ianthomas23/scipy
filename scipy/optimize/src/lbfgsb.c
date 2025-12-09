@@ -830,7 +830,7 @@ LINE111:
             BLAS_FUNC(dcopy)(&n, x, &one_int, z, &one_int);
             wrk = updatd;
             nseg = 0;
-        } 
+        }
 
         // If there are no free variables or B=theta*I, then skip the subspace
         // minimization.
@@ -875,7 +875,7 @@ LINE111:
                 subsm(n, m, nfree, index, l, u, nbd, z, r, xp, ws, wy, theta, x, g, col,
                     head, &iword, wa, wn, &info);
             }
-            
+
             if (info != 0)
             {
                 // singular triangular system detected;
@@ -1250,7 +1250,7 @@ bmv(CBLAS_INT m, double* sy, double* wt, CBLAS_INT col, double* v, double* p, CB
 
     // Solve the triangular system
     // dtrtrs(uplo, trans, diag, n, nrhs, a, lda, b, ldb, info)
-    BLAS_FUNC(dtrtrs)(uplo, trans, diag, &col, &one_int, wt, &m, &p[col], &col, info);
+    BLAS_FUNC(dtrtrs)(uplo, trans, diag, &col, &one_int, wt, &m, &p[col], &col, info, 1, 1, 1);
     if (*info != 0) { return; }
 
     // Solve D^(1/2)p1=v1.
@@ -1266,7 +1266,7 @@ bmv(CBLAS_INT m, double* sy, double* wt, CBLAS_INT col, double* v, double* p, CB
     // solve J^Tp2=p2.
     // dtrtrs(uplo, trans, diag, n, nrhs, a, lda, b, ldb, info)
     trans = "N";
-    BLAS_FUNC(dtrtrs)(uplo, trans, diag, &col, &one_int, wt, &m, &p[col], &col, info);
+    BLAS_FUNC(dtrtrs)(uplo, trans, diag, &col, &one_int, wt, &m, &p[col], &col, info, 1, 1, 1);
     if (*info != 0) { return; }
 
     // compute p1=-D^(-1/2)(p1-D^(-1/2)L'p2)
@@ -2213,14 +2213,14 @@ formk(CBLAS_INT n, CBLAS_INT nsub, CBLAS_INT* ind, CBLAS_INT nenter, CBLAS_INT i
     //                      with L' stored in the upper triangle of wn.
 
     // dpotrf(uplo, n, a, lda, info)
-    BLAS_FUNC(dpotrf)(uplo, &col, wn, &m2, info);
+    BLAS_FUNC(dpotrf)(uplo, &col, wn, &m2, info, 1);
     if (*info != 0) { *info = -1; return; }
 
     // Then form L^-1(-L_a'+R_z') in the (1,2) block.
     col2 = 2*col;
 
     // dtrtrs(uplo, trans, diag, n, nrhs, a, lda, b, ldb, info)
-    BLAS_FUNC(dtrtrs)(uplo, trans, diag, &col, &col, wn, &m2, &wn[m2*col], &m2, info);
+    BLAS_FUNC(dtrtrs)(uplo, trans, diag, &col, &col, wn, &m2, &wn[m2*col], &m2, info, 1, 1, 1);
 
     // Form S'AA'S*theta + (L^-1(-L_a'+R_z'))'L^-1(-L_a'+R_z') in the upper
     //  triangle of (2,2) block of wn.
@@ -2235,7 +2235,7 @@ formk(CBLAS_INT n, CBLAS_INT nsub, CBLAS_INT* ind, CBLAS_INT nenter, CBLAS_INT i
     // 72
 
     // dpotrf(uplo, n, a, lda, info)
-    BLAS_FUNC(dpotrf)(uplo, &col, &wn[col + m2*col], &m2, info);
+    BLAS_FUNC(dpotrf)(uplo, &col, &wn[col + m2*col], &m2, info, 1);
     if (*info != 0) { *info = -2; }
 
     return;
@@ -2302,7 +2302,7 @@ formt(CBLAS_INT m, double* wt, double* sy, double* ss, CBLAS_INT col,
 
     // Cholesky factorize T to J*J' with J' stored in the upper triangle of wt.
     // dpotrf(uplo, n, a, lda, info)
-    BLAS_FUNC(dpotrf)(uplo, &col, wt, &m, info);
+    BLAS_FUNC(dpotrf)(uplo, &col, wt, &m, info, 1);
     if (*info != 0) { *info = -3; }
 
     return;
@@ -3017,13 +3017,13 @@ void subsm(CBLAS_INT n, CBLAS_INT m, CBLAS_INT nsub, CBLAS_INT* ind,
     col2 = 2*col;
 
     // dtrtrs(uplo, trans, diag, n, nrhs, a, lda, b, ldb, info)
-    BLAS_FUNC(dtrtrs)(uplo, trans, diag, &col2, &one_int, wn, &m2, wv, &m2, info);
+    BLAS_FUNC(dtrtrs)(uplo, trans, diag, &col2, &one_int, wn, &m2, wv, &m2, info, 1, 1, 1);
     if (*info != 0) { return; }
 
     for (i = 0; i < col; i++) { wv[i] = -wv[i]; }
 
     trans = "N";
-    BLAS_FUNC(dtrtrs)(uplo, trans, diag, &col2, &one_int, wn, &m2, wv, &m2, info);
+    BLAS_FUNC(dtrtrs)(uplo, trans, diag, &col2, &one_int, wn, &m2, wv, &m2, info, 1, 1, 1);
     if (*info != 0) { return; }
 
     // Compute d = (1/theta)d + (1/theta**2)Z'W wv.
