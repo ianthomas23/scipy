@@ -172,16 +172,16 @@ endif
 # Meson using `-fvisibility=hidden` for C and `-fvisibility-inlines-hidden` for
 # C++ code. See gh-15996 for details.
 version_link_args = []
-if cc.get_id() != 'clang-cl'
-  _linker_script = meson.project_source_root() / 'scipy/_build_utils/link-version-pyinit.map'
-  vscript_link_args = ['-Wl,--version-script=' + _linker_script]
-  # Note that FreeBSD only accepts version scripts when -shared is passed,
-  # hence we need to pass that to `cc.links` explicitly (flag is already
-  # present for `extension_module` invocations).
-  if cc.links('', name: '-Wl,--version-script', args: ['-shared', vscript_link_args])
-    version_link_args = vscript_link_args
-  endif
-endif
+#if cc.get_id() != 'clang-cl'
+#  _linker_script = meson.project_source_root() / 'scipy/_build_utils/link-version-pyinit.map'
+#  vscript_link_args = ['-Wl,--version-script=' + _linker_script]
+#  # Note that FreeBSD only accepts version scripts when -shared is passed,
+#  # hence we need to pass that to `cc.links` explicitly (flag is already
+#  # present for `extension_module` invocations).
+#  if cc.links('', name: '-Wl,--version-script', args: ['-shared', vscript_link_args])
+#    version_link_args = vscript_link_args
+#  endif
+#endif
 
 generate_f2pymod = find_program('tools/generate_f2pymod.py')
 tempita = find_program('scipy/_build_utils/tempita.py')
