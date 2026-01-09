@@ -57,27 +57,27 @@ void z_div(doublecomplex *c, doublecomplex *a, doublecomplex *b)
     c->i = ci;
 }
 
+// NOTE: Already defined in openblas
+// /*! \brief Returns sqrt(z.r^2 + z.i^2) */
+// double z_abs(doublecomplex *z)
+// {
+//     double temp;
+//     double real = z->r;
+//     double imag = z->i;
 
-/*! \brief Returns sqrt(z.r^2 + z.i^2) */
-double z_abs(doublecomplex *z)
-{
-    double temp;
-    double real = z->r;
-    double imag = z->i;
-
-    if (real < 0) real = -real;
-    if (imag < 0) imag = -imag;
-    if (imag > real) {
-	temp = real;
-	real = imag;
-	imag = temp;
-    }
-    if ((real+imag) == real) return(real);
+//     if (real < 0) real = -real;
+//     if (imag < 0) imag = -imag;
+//     if (imag > real) {
+// 	temp = real;
+// 	real = imag;
+// 	imag = temp;
+//     }
+//     if ((real+imag) == real) return(real);
   
-    temp = imag/real;
-    temp = real*sqrt(1.0 + temp*temp);  /*overflow!!*/
-    return (temp);
-}
+//     temp = imag/real;
+//     temp = real*sqrt(1.0 + temp*temp);  /*overflow!!*/
+//     return (temp);
+// }
 
 
 /*! \brief Approximates the abs. Returns abs(z.r) + abs(z.i) */
