@@ -28,14 +28,14 @@ import warnings
 import numpy as np
 from . import _fitpack
 from numpy import (atleast_1d, array, ones, zeros, sqrt, ravel, transpose,
-                   empty, iinfo, asarray)
+                   empty, iinfo, asarray, int32)
 
 # Try to replace _fitpack interface with
 #  f2py-generated version
 from . import _dfitpack as dfitpack
 
 
-dfitpack_int = dfitpack.types.intvar.dtype
+dfitpack_int = int32 # dfitpack.types.intvar.dtype
 
 
 def _int_overflow(x, exception, msg=None):

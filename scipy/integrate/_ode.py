@@ -84,16 +84,16 @@ import re
 import threading
 import warnings
 
-from numpy import asarray, array, zeros, isscalar, real, imag, vstack
+from numpy import asarray, array, zeros, isscalar, real, imag, vstack, int32
 
 from . import _vode
 from . import _dop
 from . import _lsoda
 
 
-_dop_int_dtype = _dop.types.intvar.dtype
-_vode_int_dtype = _vode.types.intvar.dtype
-_lsoda_int_dtype = _lsoda.types.intvar.dtype
+_dop_int_dtype = int32  # _dop.types.intvar.dtype
+_vode_int_dtype = int32  # _vode.types.intvar.dtype
+_lsoda_int_dtype = int32  # _lsoda.types.intvar.dtype
 
 
 # lsoda, vode and zvode are not thread-safe. VODE_LOCK protects both vode and
