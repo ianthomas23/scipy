@@ -75,7 +75,7 @@ py3.extension_module('_odepack',
   link_args: version_link_args,
   dependencies: [lapack_dep, np_dep],
   install: true,
-  link_language: 'fortran',
+  link_language: 'c',
   subdir: 'scipy/integrate'
 )
 
@@ -86,7 +86,7 @@ py3.extension_module('_vode',
   link_args: version_link_args,
   dependencies: [lapack_dep, blas_dep, fortranobject_dep],
   install: true,
-  link_language: 'fortran',
+  link_language: 'c',
   subdir: 'scipy/integrate'
 )
 
@@ -97,7 +97,7 @@ py3.extension_module('_lsoda',
   dependencies: [lapack_dep, fortranobject_dep],
   link_args: version_link_args,
   install: true,
-  link_language: 'fortran',
+  link_language: 'c',
   subdir: 'scipy/integrate'
 )
 
@@ -108,7 +108,7 @@ py3.extension_module('_dop',
   dependencies: [fortranobject_dep],
   link_args: version_link_args,
   install: true,
-  link_language: 'fortran',
+  link_language: 'c',
   subdir: 'scipy/integrate'
 )
 
@@ -127,7 +127,7 @@ py3.extension_module('_test_odeint_banded',
   link_args: version_link_args,
   dependencies: [lapack_dep, fortranobject_dep],
   install: true,
-  link_language: 'fortran',
+  link_language: 'c',
   subdir: 'scipy/integrate',
   install_tag: 'tests'
 )

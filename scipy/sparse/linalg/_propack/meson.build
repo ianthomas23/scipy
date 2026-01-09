@@ -107,7 +107,7 @@ foreach ele: elements
     dependencies: [lapack_dep, blas_dep, fortranobject_dep],
     link_args: version_link_args,
     install: true,
-    link_language: 'fortran',
+    link_language: 'c',
     subdir: 'scipy/sparse/linalg/_propack'
   )
 endforeach
