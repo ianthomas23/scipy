@@ -26,11 +26,11 @@ highs_incdirs = highs_proj.get_variable('_incdirs')
 highs_cpp_suppressions = highs_proj.get_variable('_highs_cpp_suppressions')
 highs_c_suppressions = highs_proj.get_variable('_highs_c_suppressions')
 
-if is_32bit
-  _float_store = cc.get_supported_arguments('-ffloat-store')
-  _cpp_float_store = cpp.get_supported_arguments('-ffloat-store')
-  highs_args += _float_store + _cpp_float_store
-endif
+#if is_32bit
+#  _float_store = cc.get_supported_arguments('-ffloat-store')
+#  _cpp_float_store = cpp.get_supported_arguments('-ffloat-store')
+#  highs_args += _float_store + _cpp_float_store
+#endif
 
 highspy_cpp = highs_proj.get_variable('highspy_cpp')
 highs_conf_file = highs_proj.get_variable('highs_conf_file')
