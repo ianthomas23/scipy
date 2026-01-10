@@ -23,54 +23,54 @@
 // BLAS and LAPACK functions used
 void saxpy_(int* n, float* sa, float* sx, int* incx, float* sy, int* incy);
 void scopy_(int* n, float* dx, int* incx, float* dy, int* incy);
-void sgees_(char* jobvs, char* sort, int (*select)(float*, float*), int* n, float* a, int* lda, int* sdim, float* wr, float* wi, float* vs, int* ldvs, float* work, int* lwork, int* bwork, int* info);
-void sgemm_(char* transa, char* transb, int* m, int* n, int* k, float* alpha, float* a, int* lda, float* b, int* ldb, float* beta, float* c, int* ldc);
-void sgemv_(char* trans, int* m, int* n, float* alpha, float* a, int* lda, float* x, int* incx, float* beta, float* y, int* incy);
+void sgees_(char* jobvs, char* sort, int (*select)(float*, float*), int* n, float* a, int* lda, int* sdim, float* wr, float* wi, float* vs, int* ldvs, float* work, int* lwork, int* bwork, int* info, int, int);
+void sgemm_(char* transa, char* transb, int* m, int* n, int* k, float* alpha, float* a, int* lda, float* b, int* ldb, float* beta, float* c, int* ldc, int, int);
+void sgemv_(char* trans, int* m, int* n, float* alpha, float* a, int* lda, float* x, int* incx, float* beta, float* y, int* incy, int);
 void sgetrf_(int* m, int* n, float* a, int* lda, int* ipiv, int* info);
-void sgetrs_(char* trans, int* n, int* nrhs, float* a, int* lda, int* ipiv, float* b, int* ldb, int* info);
+void sgetrs_(char* trans, int* n, int* nrhs, float* a, int* lda, int* ipiv, float* b, int* ldb, int* info, int);
 void slacn2_(int* n, float* v, float* x, int* isgn, float* est, int* kase, int* isave);
 void slanv2_(float* a, float* b, float* c, float* d, float* rt1r, float* rt1i, float* rt2r, float* rt2i, float* cs, float* sn);
 void sscal_(int* n, float* sa, float* sx, int* incx);
-void strsyl_(char* trana, char* tranb, int* isgn, int* m, int* n, float* a, int* lda, float* b, int* ldb, float* c, int* ldc, float* scale, int* info);
+void strsyl_(char* trana, char* tranb, int* isgn, int* m, int* n, float* a, int* lda, float* b, int* ldb, float* c, int* ldc, float* scale, int* info, int, int);
 // void strsyl3_(char* trana, char* tranb, int* isgn, int* m, int* n, float* a, int* lda, float* b, int* ldb, float* c, int* ldc, float* scale, int* iwork, int* liwork, float* swork, int* ldswork, int* info);
 
 void daxpy_(int* n, double* sa, double* sx, int* incx, double* sy, int* incy);
 void dcopy_(int* n, double* dx, int* incx, double* dy, int* incy);
-void dgees_(char* jobvs, char* sort, int (*select)(double*, double*), int* n, double* a, int* lda, int* sdim, double* wr, double* wi, double* vs, int* ldvs, double* work, int* lwork, int* bwork, int* info);
-void dgemm_(char* transa, char* transb, int* m, int* n, int* k, double* alpha, double* a, int* lda, double* b, int* ldb, double* beta, double* c, int* ldc);
-void dgemv_(char* trans, int* m, int* n, double* alpha, double* a, int* lda, double* x, int* incx, double* beta, double* y, int* incy);
+void dgees_(char* jobvs, char* sort, int (*select)(double*, double*), int* n, double* a, int* lda, int* sdim, double* wr, double* wi, double* vs, int* ldvs, double* work, int* lwork, int* bwork, int* info, int, int);
+void dgemm_(char* transa, char* transb, int* m, int* n, int* k, double* alpha, double* a, int* lda, double* b, int* ldb, double* beta, double* c, int* ldc, int, int);
+void dgemv_(char* trans, int* m, int* n, double* alpha, double* a, int* lda, double* x, int* incx, double* beta, double* y, int* incy, int);
 void dgetrf_(int* m, int* n, double* a, int* lda, int* ipiv, int* info);
-void dgetrs_(char* trans, int* n, int* nrhs, double* a, int* lda, int* ipiv, double* b, int* ldb, int* info);
+void dgetrs_(char* trans, int* n, int* nrhs, double* a, int* lda, int* ipiv, double* b, int* ldb, int* info, int);
 void dlacn2_(int* n, double* v, double* x, int* isgn, double* est, int* kase, int* isave);
 void dlanv2_(double* a, double* b, double* c, double* d, double* rt1r, double* rt1i, double* rt2r, double* rt2i, double* cs, double* sn);
 void dscal_(int* n, double* sa, double* sx, int* incx);
-void dtrsyl_(char* trana, char* tranb, int* isgn, int* m, int* n, double* a, int* lda, double* b, int* ldb, double* c, int* ldc, double* scale, int* info);
+void dtrsyl_(char* trana, char* tranb, int* isgn, int* m, int* n, double* a, int* lda, double* b, int* ldb, double* c, int* ldc, double* scale, int* info, int, int);
 // void dtrsyl3_(char* trana, char* tranb, int* isgn, int* m, int* n, double* a, int* lda, double* b, int* ldb, double* c, int* ldc, double* scale, int* iwork, int* liwork, double* swork, int* ldswork, int* info);
 
 void caxpy_(int* n, SCIPY_C* sa, SCIPY_C* sx, int* incx, SCIPY_C* sy, int* incy);
 void ccopy_(int* n, SCIPY_C* dx, int* incx, SCIPY_C* dy, int* incy);
-void cgees_(char* jobvs, char* sort, int (*select)(SCIPY_C), int* n, SCIPY_C* a, int* lda, int* sdim, SCIPY_C* w, SCIPY_C* vs, int* ldvs, SCIPY_C* work, int* lwork, float* rwork, int* bwork, int* info);
-void cgemm_(char* transa, char* transb, int* m, int* n, int* k, SCIPY_C* alpha, SCIPY_C* a, int* lda, SCIPY_C* b, int* ldb, SCIPY_C* beta, SCIPY_C* c, int* ldc);
-void cgemv_(char* trans, int* m, int* n, SCIPY_C* alpha, SCIPY_C* a, int* lda, SCIPY_C* x, int* incx, SCIPY_C* beta, SCIPY_C* y, int* incy);
+void cgees_(char* jobvs, char* sort, int (*select)(SCIPY_C), int* n, SCIPY_C* a, int* lda, int* sdim, SCIPY_C* w, SCIPY_C* vs, int* ldvs, SCIPY_C* work, int* lwork, float* rwork, int* bwork, int* info, int, int);
+void cgemm_(char* transa, char* transb, int* m, int* n, int* k, SCIPY_C* alpha, SCIPY_C* a, int* lda, SCIPY_C* b, int* ldb, SCIPY_C* beta, SCIPY_C* c, int* ldc, int, int);
+void cgemv_(char* trans, int* m, int* n, SCIPY_C* alpha, SCIPY_C* a, int* lda, SCIPY_C* x, int* incx, SCIPY_C* beta, SCIPY_C* y, int* incy, int);
 void cgetrf_(int* m, int* n, SCIPY_C* a, int* lda, int* ipiv, int* info);
-void cgetrs_(char* trans, int* n, int* nrhs, SCIPY_C* a, int* lda, int* ipiv, SCIPY_C* b, int* ldb, int* info);
+void cgetrs_(char* trans, int* n, int* nrhs, SCIPY_C* a, int* lda, int* ipiv, SCIPY_C* b, int* ldb, int* info, int);
 void clacn2_(int* n, SCIPY_C* v, SCIPY_C* x, float* est, int* kase, int* isave);
 void crot_(int* n, SCIPY_C* cx, int* incx, SCIPY_C* cy, int* incy, float* c, SCIPY_C* s);
 void csscal_(int* n, float* sa, SCIPY_C* sx, int* incx);
-void ctrsyl_(char* trana, char* tranb, int* isgn, int* m, int* n, SCIPY_C* a, int* lda, SCIPY_C* b, int* ldb, SCIPY_C* c, int* ldc, float* scale, int* info);
+void ctrsyl_(char* trana, char* tranb, int* isgn, int* m, int* n, SCIPY_C* a, int* lda, SCIPY_C* b, int* ldb, SCIPY_C* c, int* ldc, float* scale, int* info, int, int);
 // void ctrsyl3_(char* trana, char* tranb, int* isgn, int* m, int* n, SCIPY_C* a, int* lda, SCIPY_C* b, int* ldb, SCIPY_C* c, int* ldc, float* scale, float* swork, int* ldswork, int* info);
 
 void zaxpy_(int* n, SCIPY_Z* sa, SCIPY_Z* sx, int* incx, SCIPY_Z* sy, int* incy);
 void zcopy_(int* n, SCIPY_Z* dx, int* incx, SCIPY_Z* dy, int* incy);
-void zgees_(char* jobvs, char* sort, int (*select)(SCIPY_Z), int* n, SCIPY_Z* a, int* lda, int* sdim, SCIPY_Z* w, SCIPY_Z* vs, int* ldvs, SCIPY_Z* work, int* lwork, double* rwork, int* bwork, int* info);
-void zgemm_(char* transa, char* transb, int* m, int* n, int* k, SCIPY_Z* alpha, SCIPY_Z* a, int* lda, SCIPY_Z* b, int* ldb, SCIPY_Z* beta, SCIPY_Z* c, int* ldc);
-void zgemv_(char* trans, int* m, int* n, SCIPY_Z* alpha, SCIPY_Z* a, int* lda, SCIPY_Z* x, int* incx, SCIPY_Z* beta, SCIPY_Z* y, int* incy);
+void zgees_(char* jobvs, char* sort, int (*select)(SCIPY_Z), int* n, SCIPY_Z* a, int* lda, int* sdim, SCIPY_Z* w, SCIPY_Z* vs, int* ldvs, SCIPY_Z* work, int* lwork, double* rwork, int* bwork, int* info, int, int);
+void zgemm_(char* transa, char* transb, int* m, int* n, int* k, SCIPY_Z* alpha, SCIPY_Z* a, int* lda, SCIPY_Z* b, int* ldb, SCIPY_Z* beta, SCIPY_Z* c, int* ldc, int, int);
+void zgemv_(char* trans, int* m, int* n, SCIPY_Z* alpha, SCIPY_Z* a, int* lda, SCIPY_Z* x, int* incx, SCIPY_Z* beta, SCIPY_Z* y, int* incy, int);
 void zgetrf_(int* m, int* n, SCIPY_Z* a, int* lda, int* ipiv, int* info);
-void zgetrs_(char* trans, int* n, int* nrhs, SCIPY_Z* a, int* lda, int* ipiv, SCIPY_Z* b, int* ldb, int* info);
+void zgetrs_(char* trans, int* n, int* nrhs, SCIPY_Z* a, int* lda, int* ipiv, SCIPY_Z* b, int* ldb, int* info, int);
 void zlacn2_(int* n, SCIPY_Z* v, SCIPY_Z* x, double* est, int* kase, int* isave);
 void zrot_(int* n, SCIPY_Z* cx, int* incx, SCIPY_Z* cy, int* incy, double* c, SCIPY_Z* s);
 void zdscal_(int* n, double* sa, SCIPY_Z* sx, int* incx);
-void ztrsyl_(char* trana, char* tranb, int* isgn, int* m, int* n, SCIPY_Z* a, int* lda, SCIPY_Z* b, int* ldb, SCIPY_Z* c, int* ldc, double* scale, int* info);
+void ztrsyl_(char* trana, char* tranb, int* isgn, int* m, int* n, SCIPY_Z* a, int* lda, SCIPY_Z* b, int* ldb, SCIPY_Z* c, int* ldc, double* scale, int* info, int, int);
 // void ztrsyl3_(char* trana, char* tranb, int* isgn, int* m, int* n, SCIPY_Z* a, int* lda, SCIPY_Z* b, int* ldb, SCIPY_Z* c, int* ldc, double* scale, double* swork, int* ldswork, int* info);
 
 /*
