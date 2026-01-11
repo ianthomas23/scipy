@@ -195,7 +195,7 @@ ARNAUD_dneupd(struct ARNAUD_state_d *V, int rvec, int howmny, int* select,
 
         tmp_int = ldh*V->ncv;
         dcopy_(&tmp_int, &workl[ih], &int1, &workl[iuptri], &int1);
-        dlaset_("A", &V->ncv, &V->ncv, &dbl0, &dbl1, &workl[invsub], &ldq);
+        dlaset_("A", &V->ncv, &V->ncv, &dbl0, &dbl1, &workl[invsub], &ldq, 1);
         dlahqr_(&int1, &int1, &V->ncv, &int1, &V->ncv, &workl[iuptri], &ldh,
                 &workl[iheigr], &workl[iheigi], &int1, &V->ncv, &workl[invsub],
                 &ldq, &ierr);
@@ -211,7 +211,7 @@ ARNAUD_dneupd(struct ARNAUD_state_d *V, int rvec, int howmny, int* select,
         {
             dtrsen_("N", "V", select, &V->ncv, &workl[iuptri], &ldh, &workl[invsub], &ldq,
                     &workl[iheigr], &workl[iheigi], &nconv2, &conds, &sep, &workl[ihbds],
-                    &V->ncv, iwork, &int1, &ierr);
+                    &V->ncv, iwork, &int1, &ierr, 1, 1);
 
             if (nconv2 < V->nconv) { V->nconv = nconv2; }
             if (ierr == 1) {
@@ -252,9 +252,9 @@ ARNAUD_dneupd(struct ARNAUD_state_d *V, int rvec, int howmny, int* select,
         //  matrix of order NCONV in workl(iuptri)
 
         dorm2r_("R", "N", &V->n, &V->ncv, &V->nconv, &workl[invsub], &ldq, workev,
-                v, &ldv, &workd[V->n], &ierr);
+                v, &ldv, &workd[V->n], &ierr, 1, 1);
 
-        dlacpy_("A", &V->n, &V->nconv, v, &ldv, z, &ldz);
+        dlacpy_("A", &V->n, &V->nconv, v, &ldv, z, &ldz, 1);
 
         //  Perform both a column and row scaling if the
         //  diagonal element of workl(invsub,ldq) is negative
@@ -291,7 +291,7 @@ ARNAUD_dneupd(struct ARNAUD_state_d *V, int rvec, int howmny, int* select,
             // 30
 
             dtrevc_("R", "S", select, &V->ncv, &workl[iuptri], &ldq, vl, &int1,
-                    &workl[invsub], &ldq, &V->ncv, &outncv, workev, &ierr);
+                    &workl[invsub], &ldq, &V->ncv, &outncv, workev, &ierr, 1, 1);
 
             if (ierr != 0)
             {
@@ -338,7 +338,7 @@ ARNAUD_dneupd(struct ARNAUD_state_d *V, int rvec, int howmny, int* select,
             }
             // 40
 
-            dgemv_("T", &V->ncv, &V->nconv, &dbl1, &workl[invsub], &ldq, &workl[ihbds], &int1, &dbl0, workev, &int1);
+            dgemv_("T", &V->ncv, &V->nconv, &dbl1, &workl[invsub], &ldq, &workl[ihbds], &int1, &dbl0, workev, &int1, 1);
 
             iconj = 0;
             for (j = 0; j < V->nconv; j++)
@@ -379,9 +379,9 @@ ARNAUD_dneupd(struct ARNAUD_state_d *V, int rvec, int howmny, int* select,
             //  in workl(iheigr) and workl(iheigi).
 
             dorm2r_("R", "N", &V->n, &V->ncv, &V->nconv, &workl[invsub], &ldq,
-                    workev, z, &ldz, &workd[V->n], &ierr);
+                    workev, z, &ldz, &workd[V->n], &ierr, 1, 1);
 
-            dtrmm_("R", "U", "N", "N", &V->n, &V->nconv, &dbl1, &workl[invsub], &ldq, z, &ldz);
+            dtrmm_("R", "U", "N", "N", &V->n, &V->nconv, &dbl1, &workl[invsub], &ldq, z, &ldz, 1, 1, 1, 1);
 
         }
 
@@ -1046,7 +1046,7 @@ dneigh(double* rnorm, int n, double* h, int ldh, double* ritzr, double* ritzi,
     //  dlahqr returns the full Schur form of H in WORKL(1:N**2)
     //  and the last components of the Schur vectors in BOUNDS.
 
-    dlacpy_("A", &n, &n, h, &ldh, workl, &n);
+    dlacpy_("A", &n, &n, h, &ldh, workl, &n, 1);
     for (j = 0; j < n-1; j++)
     {
         bounds[j] = 0.0;
@@ -1064,7 +1064,7 @@ dneigh(double* rnorm, int n, double* h, int ldh, double* ritzr, double* ritzi,
     //  of the eigenvector components are split across adjacent
     //  columns of Q.
 
-    dtrevc_("R", "A", select, &n, workl, &n, vl, &n, q, &ldq, &n, &n, &workl[n*n], ierr);
+    dtrevc_("R", "A", select, &n, workl, &n, vl, &n, q, &ldq, &n, &n, &workl[n*n], ierr, 1, 1);
     if (*ierr != 0) { return; }
 
     //  Scale the returning eigenvectors so that their
@@ -1109,7 +1109,7 @@ dneigh(double* rnorm, int n, double* h, int ldh, double* ritzr, double* ritzi,
     }
     // 10
 
-    dgemv_("T", &n, &n, &dbl1, q, &ldq, bounds, &int1, &dbl0, workl, &int1);
+    dgemv_("T", &n, &n, &dbl1, q, &ldq, bounds, &int1, &dbl0, workl, &int1, 1);
 
     //  Compute the Ritz estimates
 
@@ -1255,8 +1255,8 @@ LINE40:
         dscal_(&n, &temp1, &v[ldv*(V->aitr_j)], &int1);
         dscal_(&n, &temp1, &workd[ipj], &int1);
     } else {
-        dlascl_("G", &i, &i, rnorm, &dbl1, &n, &int1, &v[ldv*(V->aitr_j)], &n, &infol);
-        dlascl_("G", &i, &i, rnorm, &dbl1, &n, &int1, &workd[ipj], &n, &infol);
+        dlascl_("G", &i, &i, rnorm, &dbl1, &n, &int1, &v[ldv*(V->aitr_j)], &n, &infol, 1);
+        dlascl_("G", &i, &i, rnorm, &dbl1, &n, &int1, &workd[ipj], &n, &infol, 1);
     }
 
     //  STEP 3:  r_{j} = OP*v_{j}; Note that p_{j} = B*v_{j}
@@ -1330,12 +1330,12 @@ LINE60:
     //  Compute the j Fourier coefficients w_{j}
     //  WORKD(IPJ:IPJ+N-1) contains B*OP*v_{j}.
     tmp_int = V->aitr_j + 1;
-    dgemv_("T", &n, &tmp_int, &dbl1, v, &ldv, &workd[ipj], &int1, &dbl0, &h[ldh*(V->aitr_j)], &int1);
+    dgemv_("T", &n, &tmp_int, &dbl1, v, &ldv, &workd[ipj], &int1, &dbl0, &h[ldh*(V->aitr_j)], &int1, 1);
 
     //  Orthogonalize r_{j} against V_{j}.
     //  RESID contains OP*v_{j}. See STEP 3.
 
-    dgemv_("N", &n, &tmp_int, &dblm1, v, &ldv, &h[ldh*(V->aitr_j)], &int1, &dbl1, resid, &int1);
+    dgemv_("N", &n, &tmp_int, &dblm1, v, &ldv, &h[ldh*(V->aitr_j)], &int1, &dbl1, resid, &int1, 1);
 
     if (V->aitr_j > 0) { h[V->aitr_j + ldh*(V->aitr_j-1)] = V->aitr_betaj; }
 
@@ -1400,14 +1400,14 @@ LINE80:
     //  Compute V_{j}^T * B * r_{j}.
     //  WORKD(IRJ:IRJ+J-1) = v(:,1:J)'*WORKD(IPJ:IPJ+N-1).
     tmp_int = V->aitr_j + 1;
-    dgemv_("T", &n, &tmp_int, &dbl1, v, &ldv, &workd[ipj], &int1, &dbl0, &workd[irj], &int1);
+    dgemv_("T", &n, &tmp_int, &dbl1, v, &ldv, &workd[ipj], &int1, &dbl0, &workd[irj], &int1, 1);
 
     //  Compute the correction to the residual:
     //  r_{j} = r_{j} - V_{j} * WORKD(IRJ:IRJ+J-1).
     //  The correction to H is v(:,1:J)*H(1:J,1:J)
     //  + v(:,1:J)*WORKD(IRJ:IRJ+J-1)*e'_j.
 
-    dgemv_("N", &n, &tmp_int, &dblm1, v, &ldv, &workd[irj], &int1, &dbl1, resid, &int1);
+    dgemv_("N", &n, &tmp_int, &dblm1, v, &ldv, &workd[irj], &int1, &dbl1, resid, &int1, 1);
     daxpy_(&tmp_int, &dbl1, &workd[irj], &int1, &h[ldh*(V->aitr_j)], &int1);
 
     V->aitr_orth2 = 1;
@@ -1501,7 +1501,7 @@ LINE100:
             if (tst1 == 0.0)
             {
                 tmp_int = k + np;
-                tst1 = dlanhs_("1", &tmp_int, h, &ldh, &workd[n]);
+                tst1 = dlanhs_("1", &tmp_int, h, &ldh, &workd[n], 1);
             }
             if (fabs(h[i+1 + ldh*i]) <= fmax(ulp*tst1, smlnum))
             {
@@ -1531,7 +1531,7 @@ dnapps(int n, int* kev, int np, double* shiftr, double* shifti, double* v,
 
     //  Initialize Q to the identity to accumulate
     //  the rotations and reflections
-    dlaset_("A", &kplusp, &kplusp, &dbl0, &dbl1, q, &ldq);
+    dlaset_("A", &kplusp, &kplusp, &dbl0, &dbl1, q, &ldq, 1);
 
     //  Quick return if there are no shifts to apply
 
@@ -1592,7 +1592,7 @@ dnapps(int n, int* kev, int np, double* shiftr, double* shifti, double* v,
                 if (tst1 == 0.0)
                 {
                     tmp_int = kplusp - jj;
-                    tst1 = dlanhs_("1", &tmp_int, h, &ldh, workl);
+                    tst1 = dlanhs_("1", &tmp_int, h, &ldh, workl, 1);
                 }
                 if (fabs(h[iend+1 + (iend * ldh)]) <= fmax(smlnum, ulp * tst1))
                 {
@@ -1666,10 +1666,10 @@ dnapps(int n, int* kev, int np, double* shiftr, double* shifti, double* v,
                     u[0] = 1.0;
 
                     tmp_int = kplusp - i;
-                    dlarf_("L", &nr, &tmp_int, u, &int1, &tau, &h[i + ldh*i], &ldh, workl);
+                    dlarf_("L", &nr, &tmp_int, u, &int1, &tau, &h[i + ldh*i], &ldh, workl, 1);
                     ir = (i + 3 > iend ? iend : i + 3) + 1;
-                    dlarf_("R", &ir, &nr, u, &int1, &tau, &h[ldh*i], &ldh, workl);
-                    dlarf_("R", &kplusp, &nr, u, &int1, &tau, &q[ldq*i], &ldq, workl);
+                    dlarf_("R", &ir, &nr, u, &int1, &tau, &h[ldh*i], &ldh, workl, 1);
+                    dlarf_("R", &kplusp, &nr, u, &int1, &tau, &q[ldq*i], &ldq, workl, 1);
                     if (i < iend - 1)
                     {
                         u[0] = h[i+1 + i * ldh];
@@ -1708,7 +1708,7 @@ dnapps(int n, int* kev, int np, double* shiftr, double* shifti, double* v,
         tst1 = fabs(h[i + ldh*i]) + fabs(h[i+1 + ldh*(i+1)]);
         if (tst1 == 0.0)
         {
-            tst1 = dlanhs_("1", kev, h, &ldh, workl);
+            tst1 = dlanhs_("1", kev, h, &ldh, workl, 1);
         }
         if (h[i+1 + ldh*i] <= fmax(ulp*tst1, smlnum))
         {
@@ -1725,7 +1725,7 @@ dnapps(int n, int* kev, int np, double* shiftr, double* shifti, double* v,
 
     if (h[*kev + ldh*(*kev-1)] > 0.0)
     {
-        dgemv_("N", &n, &kplusp, &dbl1, v, &ldv, &q[(*kev)*ldq], &int1, &dbl0, &workd[n], &int1);
+        dgemv_("N", &n, &kplusp, &dbl1, v, &ldv, &q[(*kev)*ldq], &int1, &dbl0, &workd[n], &int1, 1);
     }
 
     //  Compute column 1 to kev of (V*Q) in backward order
@@ -1734,7 +1734,7 @@ dnapps(int n, int* kev, int np, double* shiftr, double* shifti, double* v,
     for (i = 0; i < *kev; i++)
     {
         tmp_int = kplusp - i;
-        dgemv_("N", &n, &tmp_int, &dbl1, v, &ldv, &q[(*kev-i-1)*ldq], &int1, &dbl0, workd, &int1);
+        dgemv_("N", &n, &tmp_int, &dbl1, v, &ldv, &q[(*kev-i-1)*ldq], &int1, &dbl0, workd, &int1, 1);
         dcopy_(&n, workd, &int1, &v[(kplusp-i-1)*ldv], &int1);
     }
 
@@ -1942,8 +1942,8 @@ LINE20:
 
 LINE30:
 
-    dgemv_("T", &n, &j, &dbl1, v, &ldv, workd, &int1, &dbl0, &workd[n], &int1);
-    dgemv_("N", &n, &j, &dblm1, v, &ldv, &workd[n], &int1, &dbl1, resid, &int1);
+    dgemv_("T", &n, &j, &dbl1, v, &ldv, workd, &int1, &dbl0, &workd[n], &int1, 1);
+    dgemv_("N", &n, &j, &dblm1, v, &ldv, &workd[n], &int1, &dbl1, resid, &int1, 1);
 
     //  Compute the B-norm of the orthogonalized starting vector
 
