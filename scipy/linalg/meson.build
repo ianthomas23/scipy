@@ -69,7 +69,7 @@ py3.extension_module('_fblas',
   link_args: version_link_args,
   dependencies: [lapack_lp64_dep, fortranobject_dep],
   install: true,
-  link_language: 'fortran',
+  link_language: 'c',
   subdir: 'scipy/linalg'
 )
 
@@ -134,7 +134,7 @@ if use_ilp64
     include_directories: ['../_build_utils/src'],   # for npy_cblas.h
     dependencies: [lapack_dep, fortranobject_dep],  # lapack_dep is ILP64 if use_ilp64==true
     install: true,
-    link_language: 'fortran',
+    link_language: 'c',
     subdir: 'scipy/linalg'
   )
 
@@ -151,7 +151,7 @@ if use_ilp64
     include_directories: ['../_build_utils/src'],   # for npy_cblas.h
     dependencies: [lapack_dep, fortranobject_dep],
     install: true,
-    link_language: 'fortran',
+    link_language: 'c',
     subdir: 'scipy/linalg'
   )
 endif
