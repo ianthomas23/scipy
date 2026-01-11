@@ -89,7 +89,7 @@ void slansvd_irl(int which, int jobu, int jobv, int m, int n, int dim, int p, in
 
         // SVD of bidiagonal matrix
         sbdsqr_("U", &dim, &int0, &int1, &int0, &work[ialpha1], &work[ibeta1], work, &int1,
-                &work[ibnd], &int1, work, &int1, &work[iwrk], &lapinfo);
+                &work[ibnd], &int1, work, &int1, &work[iwrk], &lapinfo, 1);
 
         // Update anorm estimate
         if (dim > 5)
@@ -322,7 +322,7 @@ void dlansvd_irl(int which, int jobu, int jobv, int m, int n, int dim, int p, in
         dbdqr((dim == int_min(m, n)), 0, dim, &work[ialpha1], &work[ibeta1], &work[ibnd + dim - 1], &work[ibnd + dim], &work[ip], dim + 1);
 
         // SVD of bidiagonal matrix
-        dbdsqr_("U", &dim, &int0, &int1, &int0, &work[ialpha1], &work[ibeta1], work, &int1, &work[ibnd], &int1, work, &int1, &work[iwrk], &lapinfo);
+        dbdsqr_("U", &dim, &int0, &int1, &int0, &work[ialpha1], &work[ibeta1], work, &int1, &work[ibnd], &int1, work, &int1, &work[iwrk], &lapinfo, 1);
 
         // Update anorm estimate
         if (dim > 5)
@@ -556,7 +556,7 @@ void clansvd_irl(int which, int jobu, int jobv, int m, int n, int dim, int p, in
         sbdqr((dim == int_min(m, n)), 0, dim, &work[ialpha1], &work[ibeta1], &work[ibnd + dim - 1], &work[ibnd + dim], &work[ip], dim + 1);
 
         // SVD of bidiagonal matrix
-        sbdsqr_("U", &dim, &int0, &int1, &int0, &work[ialpha1], &work[ibeta1], work, &int1, &work[ibnd], &int1, work, &int1, &work[iwrk], &lapinfo);
+        sbdsqr_("U", &dim, &int0, &int1, &int0, &work[ialpha1], &work[ibeta1], work, &int1, &work[ibnd], &int1, work, &int1, &work[iwrk], &lapinfo, 1);
 
         // Update anorm estimate
         if (dim > 5)
@@ -787,7 +787,7 @@ void zlansvd_irl(int which, int jobu, int jobv, int m, int n, int dim, int p, in
         dbdqr((dim == int_min(m, n)), 0, dim, &work[ialpha1], &work[ibeta1], &work[ibnd + dim - 1], &work[ibnd + dim], &work[ip], dim + 1);
 
         // SVD of bidiagonal matrix
-        dbdsqr_("U", &dim, &int0, &int1, &int0, &work[ialpha1], &work[ibeta1], work, &int1, &work[ibnd], &int1, work, &int1, &work[iwrk], &lapinfo);
+        dbdsqr_("U", &dim, &int0, &int1, &int0, &work[ialpha1], &work[ibeta1], work, &int1, &work[ibnd], &int1, work, &int1, &work[iwrk], &lapinfo, 1);
 
         // Update anorm estimate
         if (dim > 5)

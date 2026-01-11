@@ -122,7 +122,7 @@ void sbdqr(const int ignorelast, const int jobq, const int n, float* restrict D,
     {
         // Reset Qt to the identity matrix.
         int nplus1 = n + 1;
-        slaset_("A", &nplus1, &nplus1, &flt0, &flt1, Qt, &ldq);
+        slaset_("A", &nplus1, &nplus1, &flt0, &flt1, Qt, &ldq, 1);
     }
     for (int i = 0; i < n-1; i++)
     {
@@ -416,7 +416,7 @@ void dbdqr(const int ignorelast, const int jobq, const int n, double* restrict D
     {
         // Reset Qt to the identity matrix.
         int nplus1 = n + 1;
-        dlaset_("A", &nplus1, &nplus1, &dbl0, &dbl1, Qt, &ldq);
+        dlaset_("A", &nplus1, &nplus1, &dbl0, &dbl1, Qt, &ldq, 1);
     }
     for (int i = 0; i < n-1; i++)
     {

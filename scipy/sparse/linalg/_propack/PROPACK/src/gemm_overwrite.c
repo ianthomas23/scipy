@@ -23,7 +23,7 @@ void sgemm_ovwr(const int transa, int m, int n, int k, float alpha,
         int block_start = i * blocksize;
 
         // Compute work = alpha * op(A) * B(:, block_start:block_start+blocksize-1)
-        sgemm_(&transchara, "N", &m, &blocksize, &k, &alpha, A, &lda, &B[block_start * ldb], &ldb, &zero, work, &m);
+        sgemm_(&transchara, "N", &m, &blocksize, &k, &alpha, A, &lda, &B[block_start * ldb], &ldb, &zero, work, &m, 1, 1);
 
         // Copy result back to B
         float* B_col = &B[block_start * ldb];
@@ -51,7 +51,7 @@ void sgemm_ovwr(const int transa, int m, int n, int k, float alpha,
     if (remainder_cols > 0) {
         int block_start = num_full_blocks * blocksize;
 
-        sgemm_(&transchara, "N", &m, &remainder_cols, &k, &alpha, A, &lda, &B[block_start * ldb], &ldb, &zero, work, &m);
+        sgemm_(&transchara, "N", &m, &remainder_cols, &k, &alpha, A, &lda, &B[block_start * ldb], &ldb, &zero, work, &m, 1, 1);
 
         // Copy remainder results back
         float* B_col = &B[block_start * ldb];
@@ -97,7 +97,7 @@ void sgemm_ovwr_left(const int transb, int m, int n, int k, float alpha,
         int block_start = i * blocksize;
 
         // Compute work = alpha * A(block_start:block_start+blocksize-1, :) * op(B)
-        sgemm_("N", &transcharb, &blocksize, &n, &k, &alpha, &A[block_start], &lda, B, &ldb, &zero, work, &blocksize);
+        sgemm_("N", &transcharb, &blocksize, &n, &k, &alpha, &A[block_start], &lda, B, &ldb, &zero, work, &blocksize, 1, 1);
 
         // Copy result back to A
         float* work_ptr = work;
@@ -116,7 +116,7 @@ void sgemm_ovwr_left(const int transb, int m, int n, int k, float alpha,
     if (remainder_rows > 0) {
         int block_start = num_full_blocks * blocksize;
 
-        sgemm_("N", &transcharb, &remainder_rows, &n, &k, &alpha, &A[block_start], &lda, B, &ldb, &zero, work, &remainder_rows);
+        sgemm_("N", &transcharb, &remainder_rows, &n, &k, &alpha, &A[block_start], &lda, B, &ldb, &zero, work, &remainder_rows, 1, 1);
 
         // Copy remainder results back
         float* work_ptr = work;
@@ -154,7 +154,7 @@ void dgemm_ovwr(
         int block_start = i * blocksize;
 
         // Compute work = alpha * op(A) * B(:, block_start:block_start+blocksize-1)
-        dgemm_(&transchara, "N", &m, &blocksize, &k, &alpha, A, &lda, &B[block_start * ldb], &ldb, &zero, work, &m);
+        dgemm_(&transchara, "N", &m, &blocksize, &k, &alpha, A, &lda, &B[block_start * ldb], &ldb, &zero, work, &m, 1, 1);
 
         // Copy result back to B
         double* B_col = &B[block_start * ldb];
@@ -182,7 +182,7 @@ void dgemm_ovwr(
     if (remainder_cols > 0) {
         int block_start = num_full_blocks * blocksize;
 
-        dgemm_(&transchara, "N", &m, &remainder_cols, &k, &alpha, A, &lda, &B[block_start * ldb], &ldb, &zero, work, &m);
+        dgemm_(&transchara, "N", &m, &remainder_cols, &k, &alpha, A, &lda, &B[block_start * ldb], &ldb, &zero, work, &m, 1, 1);
 
         // Copy remainder results back
         double* B_col = &B[block_start * ldb];
@@ -228,7 +228,7 @@ void dgemm_ovwr_left(const int transb, int m, int n, int k, double alpha,
         int block_start = i * blocksize;
 
         // Compute work = alpha * A(block_start:block_start+blocksize-1, :) * op(B)
-        dgemm_("N", &transcharb, &blocksize, &n, &k, &alpha, &A[block_start], &lda, B, &ldb, &zero, work, &blocksize);
+        dgemm_("N", &transcharb, &blocksize, &n, &k, &alpha, &A[block_start], &lda, B, &ldb, &zero, work, &blocksize, 1, 1);
 
         // Copy result back to A
         double* work_ptr = work;
@@ -246,7 +246,7 @@ void dgemm_ovwr_left(const int transb, int m, int n, int k, double alpha,
     if (remainder_rows > 0) {
         int block_start = num_full_blocks * blocksize;
 
-        dgemm_("N", &transcharb, &remainder_rows, &n, &k, &alpha, &A[block_start], &lda, B, &ldb, &zero, work, &remainder_rows);
+        dgemm_("N", &transcharb, &remainder_rows, &n, &k, &alpha, &A[block_start], &lda, B, &ldb, &zero, work, &remainder_rows, 1, 1);
 
         // Copy remainder results back
         double* work_ptr = work;
