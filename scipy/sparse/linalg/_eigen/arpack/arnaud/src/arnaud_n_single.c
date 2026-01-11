@@ -195,7 +195,7 @@ ARNAUD_sneupd(struct ARNAUD_state_s *V, int rvec, int howmny, int* select,
 
         tmp_int = ldh*V->ncv;
         scopy_(&tmp_int, &workl[ih], &int1, &workl[iuptri], &int1);
-        slaset_("A", &V->ncv, &V->ncv, &dbl0, &dbl1, &workl[invsub], &ldq);
+        slaset_("A", &V->ncv, &V->ncv, &dbl0, &dbl1, &workl[invsub], &ldq, 1);
         slahqr_(&int1, &int1, &V->ncv, &int1, &V->ncv, &workl[iuptri], &ldh,
                 &workl[iheigr], &workl[iheigi], &int1, &V->ncv, &workl[invsub],
                 &ldq, &ierr);
@@ -211,7 +211,7 @@ ARNAUD_sneupd(struct ARNAUD_state_s *V, int rvec, int howmny, int* select,
         {
             strsen_("N", "V", select, &V->ncv, &workl[iuptri], &ldh, &workl[invsub], &ldq,
                     &workl[iheigr], &workl[iheigi], &nconv2, &conds, &sep, &workl[ihbds],
-                    &V->ncv, iwork, &int1, &ierr);
+                    &V->ncv, iwork, &int1, &ierr, 1, 1);
 
             if (nconv2 < V->nconv) { V->nconv = nconv2; }
             if (ierr == 1) {
@@ -252,9 +252,9 @@ ARNAUD_sneupd(struct ARNAUD_state_s *V, int rvec, int howmny, int* select,
         //  matrix of order NCONV in workl(iuptri)
 
         sorm2r_("R", "N", &V->n, &V->ncv, &V->nconv, &workl[invsub], &ldq, workev,
-                v, &ldv, &workd[V->n], &ierr);
+                v, &ldv, &workd[V->n], &ierr, 1, 1);
 
-        slacpy_("A", &V->n, &V->nconv, v, &ldv, z, &ldz);
+        slacpy_("A", &V->n, &V->nconv, v, &ldv, z, &ldz, 1);
 
         //  Perform both a column and row scaling if the
         //  diagonal element of workl(invsub,ldq) is negative
@@ -291,7 +291,7 @@ ARNAUD_sneupd(struct ARNAUD_state_s *V, int rvec, int howmny, int* select,
             // 30
 
             strevc_("R", "S", select, &V->ncv, &workl[iuptri], &ldq, vl, &int1,
-                    &workl[invsub], &ldq, &V->ncv, &outncv, workev, &ierr);
+                    &workl[invsub], &ldq, &V->ncv, &outncv, workev, &ierr, 1, 1);
 
             if (ierr != 0)
             {
@@ -338,7 +338,7 @@ ARNAUD_sneupd(struct ARNAUD_state_s *V, int rvec, int howmny, int* select,
             }
             // 40
 
-            sgemv_("T", &V->ncv, &V->nconv, &dbl1, &workl[invsub], &ldq, &workl[ihbds], &int1, &dbl0, workev, &int1);
+            sgemv_("T", &V->ncv, &V->nconv, &dbl1, &workl[invsub], &ldq, &workl[ihbds], &int1, &dbl0, workev, &int1, 1);
 
             iconj = 0;
             for (j = 0; j < V->nconv; j++)
@@ -379,9 +379,9 @@ ARNAUD_sneupd(struct ARNAUD_state_s *V, int rvec, int howmny, int* select,
             //  in workl(iheigr) and workl(iheigi).
 
             sorm2r_("R", "N", &V->n, &V->ncv, &V->nconv, &workl[invsub], &ldq,
-                    workev, z, &ldz, &workd[V->n], &ierr);
+                    workev, z, &ldz, &workd[V->n], &ierr, 1, 1);
 
-            strmm_("R", "U", "N", "N", &V->n, &V->nconv, &dbl1, &workl[invsub], &ldq, z, &ldz);
+            strmm_("R", "U", "N", "N", &V->n, &V->nconv, &dbl1, &workl[invsub], &ldq, z, &ldz, 1, 1, 1, 1);
 
         }
 
@@ -1047,7 +1047,7 @@ sneigh(float* rnorm, int n, float* h, int ldh, float* ritzr, float* ritzi,
     //  dlahqr returns the full Schur form of H in WORKL(1:N**2)
     //  and the last components of the Schur vectors in BOUNDS.
 
-    slacpy_("A", &n, &n, h, &ldh, workl, &n);
+    slacpy_("A", &n, &n, h, &ldh, workl, &n, 1);
     for (j = 0; j < n-1; j++)
     {
         bounds[j] = 0.0f;
@@ -1065,7 +1065,7 @@ sneigh(float* rnorm, int n, float* h, int ldh, float* ritzr, float* ritzi,
     //  of the eigenvector components are split across adjacent
     //  columns of Q.
 
-    strevc_("R", "A", select, &n, workl, &n, vl, &n, q, &ldq, &n, &n, &workl[n*n], ierr);
+    strevc_("R", "A", select, &n, workl, &n, vl, &n, q, &ldq, &n, &n, &workl[n*n], ierr, 1, 1);
     if (*ierr != 0) { return; }
 
     //  Scale the returning eigenvectors so that their
@@ -1110,7 +1110,7 @@ sneigh(float* rnorm, int n, float* h, int ldh, float* ritzr, float* ritzi,
     }
     // 10
 
-    sgemv_("T", &n, &n, &dbl1, q, &ldq, bounds, &int1, &dbl0, workl, &int1);
+    sgemv_("T", &n, &n, &dbl1, q, &ldq, bounds, &int1, &dbl0, workl, &int1, 1);
 
     //  Compute the Ritz estimates
 
@@ -1256,8 +1256,8 @@ LINE40:
         sscal_(&n, &temp1, &v[ldv*(V->aitr_j)], &int1);
         sscal_(&n, &temp1, &workd[ipj], &int1);
     } else {
-        slascl_("G", &i, &i, rnorm, &dbl1, &n, &int1, &v[ldv*(V->aitr_j)], &n, &infol);
-        slascl_("G", &i, &i, rnorm, &dbl1, &n, &int1, &workd[ipj], &n, &infol);
+        slascl_("G", &i, &i, rnorm, &dbl1, &n, &int1, &v[ldv*(V->aitr_j)], &n, &infol, 1);
+        slascl_("G", &i, &i, rnorm, &dbl1, &n, &int1, &workd[ipj], &n, &infol, 1);
     }
 
     //  STEP 3:  r_{j} = OP*v_{j}; Note that p_{j} = B*v_{j}
@@ -1331,12 +1331,12 @@ LINE60:
     //  Compute the j Fourier coefficients w_{j}
     //  WORKD(IPJ:IPJ+N-1) contains B*OP*v_{j}.
     tmp_int = V->aitr_j + 1;
-    sgemv_("T", &n, &tmp_int, &dbl1, v, &ldv, &workd[ipj], &int1, &dbl0, &h[ldh*(V->aitr_j)], &int1);
+    sgemv_("T", &n, &tmp_int, &dbl1, v, &ldv, &workd[ipj], &int1, &dbl0, &h[ldh*(V->aitr_j)], &int1, 1);
 
     //  Orthogonalize r_{j} against V_{j}.
     //  RESID contains OP*v_{j}. See STEP 3.
 
-    sgemv_("N", &n, &tmp_int, &dblm1, v, &ldv, &h[ldh*(V->aitr_j)], &int1, &dbl1, resid, &int1);
+    sgemv_("N", &n, &tmp_int, &dblm1, v, &ldv, &h[ldh*(V->aitr_j)], &int1, &dbl1, resid, &int1, 1);
 
     if (V->aitr_j > 0) { h[V->aitr_j + ldh*(V->aitr_j-1)] = V->aitr_betaj; }
 
@@ -1401,14 +1401,14 @@ LINE80:
     //  Compute V_{j}^T * B * r_{j}.
     //  WORKD(IRJ:IRJ+J-1) = v(:,1:J)'*WORKD(IPJ:IPJ+N-1).
     tmp_int = V->aitr_j + 1;
-    sgemv_("T", &n, &tmp_int, &dbl1, v, &ldv, &workd[ipj], &int1, &dbl0, &workd[irj], &int1);
+    sgemv_("T", &n, &tmp_int, &dbl1, v, &ldv, &workd[ipj], &int1, &dbl0, &workd[irj], &int1, 1);
 
     //  Compute the correction to the residual:
     //  r_{j} = r_{j} - V_{j} * WORKD(IRJ:IRJ+J-1).
     //  The correction to H is v(:,1:J)*H(1:J,1:J)
     //  + v(:,1:J)*WORKD(IRJ:IRJ+J-1)*e'_j.
 
-    sgemv_("N", &n, &tmp_int, &dblm1, v, &ldv, &workd[irj], &int1, &dbl1, resid, &int1);
+    sgemv_("N", &n, &tmp_int, &dblm1, v, &ldv, &workd[irj], &int1, &dbl1, resid, &int1, 1);
     saxpy_(&tmp_int, &dbl1, &workd[irj], &int1, &h[ldh*(V->aitr_j)], &int1);
 
     V->aitr_orth2 = 1;
@@ -1502,7 +1502,7 @@ LINE100:
             if (tst1 == 0.0f)
             {
                 tmp_int = k + np;
-                tst1 = slanhs_("1", &tmp_int, h, &ldh, &workd[n]);
+                tst1 = slanhs_("1", &tmp_int, h, &ldh, &workd[n], 1);
             }
             if (fabsf(h[i+1 + ldh*i]) <= fmaxf(ulp*tst1, smlnum))
             {
@@ -1532,7 +1532,7 @@ snapps(int n, int* kev, int np, float* shiftr, float* shifti, float* v,
 
     //  Initialize Q to the identity to accumulate
     //  the rotations and reflections
-    slaset_("A", &kplusp, &kplusp, &dbl0, &dbl1, q, &ldq);
+    slaset_("A", &kplusp, &kplusp, &dbl0, &dbl1, q, &ldq, 1);
 
     //  Quick return if there are no shifts to apply
 
@@ -1593,7 +1593,7 @@ snapps(int n, int* kev, int np, float* shiftr, float* shifti, float* v,
                 if (tst1 == 0.0f)
                 {
                     tmp_int = kplusp - jj;
-                    tst1 = slanhs_("1", &tmp_int, h, &ldh, workl);
+                    tst1 = slanhs_("1", &tmp_int, h, &ldh, workl, 1);
                 }
                 if (fabsf(h[iend+1 + (iend * ldh)]) <= fmaxf(smlnum, ulp * tst1))
                 {
@@ -1667,10 +1667,10 @@ snapps(int n, int* kev, int np, float* shiftr, float* shifti, float* v,
                     u[0] = 1.0f;
 
                     tmp_int = kplusp - i;
-                    slarf_("L", &nr, &tmp_int, u, &int1, &tau, &h[i + ldh*i], &ldh, workl);
+                    slarf_("L", &nr, &tmp_int, u, &int1, &tau, &h[i + ldh*i], &ldh, workl, 1);
                     ir = (i + 3 > iend ? iend : i + 3) + 1;
-                    slarf_("R", &ir, &nr, u, &int1, &tau, &h[ldh*i], &ldh, workl);
-                    slarf_("R", &kplusp, &nr, u, &int1, &tau, &q[ldq*i], &ldq, workl);
+                    slarf_("R", &ir, &nr, u, &int1, &tau, &h[ldh*i], &ldh, workl, 1);
+                    slarf_("R", &kplusp, &nr, u, &int1, &tau, &q[ldq*i], &ldq, workl, 1);
                     if (i < iend - 1)
                     {
                         u[0] = h[i+1 + i * ldh];
@@ -1709,7 +1709,7 @@ snapps(int n, int* kev, int np, float* shiftr, float* shifti, float* v,
         tst1 = fabsf(h[i + ldh*i]) + fabsf(h[i+1 + ldh*(i+1)]);
         if (tst1 == 0.0f)
         {
-            tst1 = slanhs_("1", kev, h, &ldh, workl);
+            tst1 = slanhs_("1", kev, h, &ldh, workl, 1);
         }
         if (h[i+1 + ldh*i] <= fmaxf(ulp*tst1, smlnum))
         {
@@ -1726,7 +1726,7 @@ snapps(int n, int* kev, int np, float* shiftr, float* shifti, float* v,
 
     if (h[*kev + ldh*(*kev-1)] > 0.0f)
     {
-        sgemv_("N", &n, &kplusp, &dbl1, v, &ldv, &q[(*kev)*ldq], &int1, &dbl0, &workd[n], &int1);
+        sgemv_("N", &n, &kplusp, &dbl1, v, &ldv, &q[(*kev)*ldq], &int1, &dbl0, &workd[n], &int1, 1);
     }
 
     //  Compute column 1 to kev of (V*Q) in backward order
@@ -1735,7 +1735,7 @@ snapps(int n, int* kev, int np, float* shiftr, float* shifti, float* v,
     for (i = 0; i < *kev; i++)
     {
         tmp_int = kplusp - i;
-        sgemv_("N", &n, &tmp_int, &dbl1, v, &ldv, &q[(*kev-i-1)*ldq], &int1, &dbl0, workd, &int1);
+        sgemv_("N", &n, &tmp_int, &dbl1, v, &ldv, &q[(*kev-i-1)*ldq], &int1, &dbl0, workd, &int1, 1);
         scopy_(&n, workd, &int1, &v[(kplusp-i-1)*ldv], &int1);
     }
 
@@ -1943,8 +1943,8 @@ LINE20:
 
 LINE30:
 
-    sgemv_("T", &n, &j, &dbl1, v, &ldv, workd, &int1, &dbl0, &workd[n], &int1);
-    sgemv_("N", &n, &j, &dblm1, v, &ldv, &workd[n], &int1, &dbl1, resid, &int1);
+    sgemv_("T", &n, &j, &dbl1, v, &ldv, workd, &int1, &dbl0, &workd[n], &int1, 1);
+    sgemv_("N", &n, &j, &dblm1, v, &ldv, &workd[n], &int1, &dbl1, resid, &int1, 1);
 
     //  Compute the B-norm of the orthogonalized starting vector
 

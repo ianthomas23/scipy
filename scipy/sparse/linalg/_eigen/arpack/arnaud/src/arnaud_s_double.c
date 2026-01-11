@@ -227,7 +227,7 @@ ARNAUD_dseupd(struct ARNAUD_state_d *V, int rvec, int howmny, int* select,
         dcopy_(&tmp_int, &workl[ih+1], &int1, &workl[ihb], &int1);
         dcopy_(&V->ncv, &workl[ih+ldh], &int1, &workl[ihd], &int1);
 
-        dsteqr_("I", &V->ncv, &workl[ihd], &workl[ihb], &workl[iq], &ldq, &workl[iw], &ierr);
+        dsteqr_("I", &V->ncv, &workl[ihd], &workl[ihb], &workl[iq], &ldq, &workl[iw], &ierr, 1);
 
         if (ierr != 0)
         {
@@ -392,8 +392,8 @@ ARNAUD_dseupd(struct ARNAUD_state_d *V, int rvec, int howmny, int* select,
         // of the approximate invariant subspace associated with
         // the Ritz values in workl(ihd).
 
-        dorm2r_("R", "N", &V->n, &V->ncv, &V->nconv, &workl[iq], &ldq, &workl[iw + V->ncv], v, &ldv, &workd[V->n], &ierr);
-        dlacpy_("A", &V->n, &V->nconv, v, &ldv, z, &ldz);
+        dorm2r_("R", "N", &V->n, &V->ncv, &V->nconv, &workl[iq], &ldq, &workl[iw + V->ncv], v, &ldv, &workd[V->n], &ierr, 1, 1);
+        dlacpy_("A", &V->n, &V->nconv, v, &ldv, z, &ldz, 1);
 
         // In order to compute the Ritz estimates for the Ritz
         // values in both systems, need the last row of the
@@ -404,7 +404,7 @@ ARNAUD_dseupd(struct ARNAUD_state_d *V, int rvec, int howmny, int* select,
             workl[ihb + j] = 0.0;
         }
         workl[ihb + V->ncv - 1] = 1.0;
-        dorm2r_("L", "T", &V->ncv, &int1, &V->nconv, &workl[iq], &ldq, &workl[iw + V->ncv], &workl[ihb], &V->ncv, &temp, &ierr);
+        dorm2r_("L", "T", &V->ncv, &int1, &V->nconv, &workl[iq], &ldq, &workl[iw + V->ncv], &workl[ihb], &V->ncv, &temp, &ierr, 1, 1);
 
         //  Make a copy of the last row into
         //  workl(iw+ncv:iw+2*ncv), as it is needed again in
@@ -1128,8 +1128,8 @@ LINE40:
         dscal_(&n, &temp1, &v[ldv*(V->aitr_j)], &int1);
         dscal_(&n, &temp1, &workd[ipj], &int1);
     } else {
-        dlascl_("G", &i, &i, rnorm, &dbl1, &n, &int1, &v[ldv*(V->aitr_j)], &n, &infol);
-        dlascl_("G", &i, &i, rnorm, &dbl1, &n, &int1, &workd[ipj], &n, &infol);
+        dlascl_("G", &i, &i, rnorm, &dbl1, &n, &int1, &v[ldv*(V->aitr_j)], &n, &infol, 1);
+        dlascl_("G", &i, &i, rnorm, &dbl1, &n, &int1, &workd[ipj], &n, &infol, 1);
     }
 
     //  STEP 3:  r_{j} = OP*v_{j}; Note that p_{j} = B*v_{j}
@@ -1217,15 +1217,15 @@ LINE65:
     tmp_int = V->aitr_j + 1;
     if (V->mode != 2)
     {
-        dgemv_("T", &n, &tmp_int, &dbl1, v, &ldv, &workd[ipj], &int1, &dbl0, &workd[irj], &int1);
+        dgemv_("T", &n, &tmp_int, &dbl1, v, &ldv, &workd[ipj], &int1, &dbl0, &workd[irj], &int1, 1);
     } else {
-        dgemv_("T", &n, &tmp_int, &dbl1, v, &ldv, &workd[ivj], &int1, &dbl0, &workd[irj], &int1);
+        dgemv_("T", &n, &tmp_int, &dbl1, v, &ldv, &workd[ivj], &int1, &dbl0, &workd[irj], &int1, 1);
     }
 
     //  Orthogonalize r_{j} against V_{j}.
     //  RESID contains OP*v_{j}. See STEP 3.
 
-    dgemv_("N", &n, &tmp_int, &dblm1, v, &ldv, &workd[irj], &int1, &dbl1, resid, &int1);
+    dgemv_("N", &n, &tmp_int, &dblm1, v, &ldv, &workd[irj], &int1, &dbl1, resid, &int1, 1);
 
     // Extend H to have j rows and columns.
 
@@ -1297,14 +1297,14 @@ LINE80:
     //  Compute V_{j}^T * B * r_{j}.
     //  WORKD(IRJ:IRJ+J-1) = v(:,1:J)'*WORKD(IPJ:IPJ+N-1).
     tmp_int = V->aitr_j + 1;
-    dgemv_("T", &n, &tmp_int, &dbl1, v, &ldv, &workd[ipj], &int1, &dbl0, &workd[irj], &int1);
+    dgemv_("T", &n, &tmp_int, &dbl1, v, &ldv, &workd[ipj], &int1, &dbl0, &workd[irj], &int1, 1);
 
     //  Compute the correction to the residual:
     //  r_{j} = r_{j} - V_{j} * WORKD(IRJ:IRJ+J-1).
     //  The correction to H is v(:,1:J)*H(1:J,1:J)
     //  + v(:,1:J)*WORKD(IRJ:IRJ+J-1)*e'_j.
 
-    dgemv_("N", &n, &tmp_int, &dblm1, v, &ldv, &workd[irj], &int1, &dbl1, resid, &int1);
+    dgemv_("N", &n, &tmp_int, &dblm1, v, &ldv, &workd[irj], &int1, &dbl1, resid, &int1, 1);
 
     if ((V->aitr_j == 0) || (V->aitr_restart))
     {
@@ -1424,7 +1424,7 @@ dsapps(int n, int* kev, int np, double* shift, double* v, int ldv, double* h, in
     // Initialize Q to the identity to accumulate
     // the rotations and reflections
 
-    dlaset_("A", &kplusp, &kplusp, &dbl0, &dbl1, q, &ldq);
+    dlaset_("A", &kplusp, &kplusp, &dbl0, &dbl1, q, &ldq, 1);
 
     // Quick return if there are no shifts to apply
 
@@ -1545,7 +1545,7 @@ dsapps(int n, int* kev, int np, double* shift, double* v, int ldv, double* h, in
 
     if (h[*kev] > 0.0)
     {
-        dgemv_("N", &n, &kplusp, &dbl1, v, &ldv, &q[ldq*(*kev)], &int1, &dbl0, &workd[n], &int1);
+        dgemv_("N", &n, &kplusp, &dbl1, v, &ldv, &q[ldq*(*kev)], &int1, &dbl0, &workd[n], &int1, 1);
     }
 
     // Compute column 1 to kev of (V*Q) in backward order
@@ -1556,7 +1556,7 @@ dsapps(int n, int* kev, int np, double* shift, double* v, int ldv, double* h, in
     for (i = 0; i < *kev; i++)
     {
         tmp_int = kplusp - i;
-        dgemv_("N", &n, &tmp_int, &dbl1, v, &ldv, &q[ldq*(*kev-i-1)], &int1, &dbl0, workd, &int1);
+        dgemv_("N", &n, &tmp_int, &dbl1, v, &ldv, &q[ldq*(*kev-i-1)], &int1, &dbl0, workd, &int1, 1);
         dcopy_(&n, workd, &int1, &v[ldv*(kplusp-i-1)], &int1);
     }
     // 130
@@ -1746,8 +1746,8 @@ LINE20:
 
 LINE30:
 
-    dgemv_("T", &n, &j, &dbl1, v, &ldv, workd, &int1, &dbl0, &workd[n], &int1);
-    dgemv_("N", &n, &j, &dblm1, v, &ldv, &workd[n], &int1, &dbl1, resid, &int1);
+    dgemv_("T", &n, &j, &dbl1, v, &ldv, workd, &int1, &dbl0, &workd[n], &int1, 1);
+    dgemv_("N", &n, &j, &dblm1, v, &ldv, &workd[n], &int1, &dbl1, resid, &int1, 1);
 
     //  Compute the B-norm of the orthogonalized starting vector
 
@@ -1976,7 +1976,7 @@ dstqrb(int n, double* d, double* e, double* z, double* work, int* info)
 
         // Scale submatrix in rows and columns L to LEND
         tmp_int = lend - l + 1;
-        anorm = dlanst_("I", &tmp_int, &d[l-1], &e[l-1]);
+        anorm = dlanst_("I", &tmp_int, &d[l-1], &e[l-1], 1);
         iscale = 0;
 
         if (anorm == 0.0) { continue; }
@@ -1984,14 +1984,14 @@ dstqrb(int n, double* d, double* e, double* z, double* work, int* info)
         if (anorm > ssfmax)
         {
             iscale = 1;
-            dlascl_("G", &int0, &int0, &anorm, &ssfmax, &tmp_int, &int1, &d[l-1], &n, info);
+            dlascl_("G", &int0, &int0, &anorm, &ssfmax, &tmp_int, &int1, &d[l-1], &n, info, 1);
             tmp_int -= 1;
-            dlascl_("G", &int0, &int0, &anorm, &ssfmax, &tmp_int, &int1, &e[l-1], &n, info);
+            dlascl_("G", &int0, &int0, &anorm, &ssfmax, &tmp_int, &int1, &e[l-1], &n, info, 1);
         } else if (anorm < ssfmin) {
             iscale = 2;
-            dlascl_("G", &int0, &int0, &anorm, &ssfmin, &tmp_int, &int1, &d[l-1], &n, info);
+            dlascl_("G", &int0, &int0, &anorm, &ssfmin, &tmp_int, &int1, &d[l-1], &n, info, 1);
             tmp_int -= 1;
-            dlascl_("G", &int0, &int0, &anorm, &ssfmin, &tmp_int, &int1, &e[l-1], &n, info);
+            dlascl_("G", &int0, &int0, &anorm, &ssfmin, &tmp_int, &int1, &e[l-1], &n, info, 1);
         }
         // Choose between QL and QR iteration
 
@@ -2078,7 +2078,7 @@ dstqrb(int n, double* d, double* e, double* z, double* work, int* info)
                 }
                 // 70
                 tmp_int = m - l + 1;
-                dlasr_("R", "V", "B", &int1, &tmp_int, &work[l-1], &work[n-1+l-1], &z[l-1], &int1);
+                dlasr_("R", "V", "B", &int1, &tmp_int, &work[l-1], &work[n-1+l-1], &z[l-1], &int1, 1, 1, 1);
 
                 d[l-1] = d[l-1] - p;
                 e[l-1] = g;
@@ -2162,7 +2162,7 @@ dstqrb(int n, double* d, double* e, double* z, double* work, int* info)
                 // 120
                 // Apply saved rotations.
                 tmp_int = l - m + 1;
-                dlasr_("R", "V", "F", &int1, &tmp_int, &work[m-1], &work[n-1+m-1], &z[m-1], &int1);
+                dlasr_("R", "V", "F", &int1, &tmp_int, &work[m-1], &work[n-1+m-1], &z[m-1], &int1, 1, 1, 1);
 
                 d[l-1] = d[l-1] - p;
                 e[l - 2] = g;
@@ -2176,15 +2176,15 @@ dstqrb(int n, double* d, double* e, double* z, double* work, int* info)
         if (iscale == 1)
         {
 
-            dlascl_("G", &int0, &int0, &ssfmax, &anorm, &tmp_int, &int1, &d[lsv-1], &n, info);
+            dlascl_("G", &int0, &int0, &ssfmax, &anorm, &tmp_int, &int1, &d[lsv-1], &n, info, 1);
             tmp_int -= 1;
-            dlascl_("G", &int0, &int0, &ssfmax, &anorm, &tmp_int, &int1, &e[lsv-1], &n, info);
+            dlascl_("G", &int0, &int0, &ssfmax, &anorm, &tmp_int, &int1, &e[lsv-1], &n, info, 1);
 
         } else if (iscale == 2) {
 
-            dlascl_("G", &int0, &int0, &ssfmin, &anorm, &tmp_int, &int1, &d[lsv-1], &n, info);
+            dlascl_("G", &int0, &int0, &ssfmin, &anorm, &tmp_int, &int1, &d[lsv-1], &n, info, 1);
             tmp_int -= 1;
-            dlascl_("G", &int0, &int0, &ssfmin, &anorm, &tmp_int, &int1, &e[lsv-1], &n, info);
+            dlascl_("G", &int0, &int0, &ssfmin, &anorm, &tmp_int, &int1, &e[lsv-1], &n, info, 1);
 
         }
 

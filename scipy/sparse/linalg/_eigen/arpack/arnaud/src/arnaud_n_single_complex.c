@@ -194,7 +194,7 @@ ARNAUD_cneupd(struct ARNAUD_state_s *V, int rvec, int howmny, int* select,
 
         tmp_int = ldh*V->ncv;
         ccopy_(&tmp_int, &workl[ih], &int1, &workl[iuptri], &int1);
-        claset_("A", &V->ncv, &V->ncv, &cdbl0, &cdbl1, &workl[invsub], &ldq);
+        claset_("A", &V->ncv, &V->ncv, &cdbl0, &cdbl1, &workl[invsub], &ldq, 1);
         clahqr_(&int1, &int1, &V->ncv, &int1, &V->ncv, &workl[iuptri], &ldh,
                 &workl[iheig], &int1, &V->ncv, &workl[invsub], &ldq, &ierr);
         ccopy_(&V->ncv, &workl[invsub + V->ncv - 1], &ldq, &workl[ihbds], &int1);
@@ -211,7 +211,7 @@ ARNAUD_cneupd(struct ARNAUD_state_s *V, int rvec, int howmny, int* select,
             //  Reorder the computed upper triangular matrix.
 
             ctrsen_("N", "V", select, &V->ncv, &workl[iuptri], &ldh, &workl[invsub], &ldq,
-                    &workl[iheig], &nconv2, &conds, &sep, workev, &V->ncv, &ierr);
+                    &workl[iheig], &nconv2, &conds, &sep, workev, &V->ncv, &ierr, 1, 1);
 
             if (nconv2 < V->nconv) { V->nconv = nconv2; }
             if (ierr == 1) {
@@ -251,8 +251,8 @@ ARNAUD_cneupd(struct ARNAUD_state_s *V, int rvec, int howmny, int* select,
         //  associated with the upper triangular matrix of order
         //  NCONV in workl(iuptri).
 
-        cunm2r_("R", "N", &V->n, &V->ncv, &V->nconv, &workl[invsub], &ldq, workev, v, &ldv, &workd[V->n], &ierr);
-        clacpy_("A", &V->n, &V->nconv, v, &ldv, z, &ldz);
+        cunm2r_("R", "N", &V->n, &V->ncv, &V->nconv, &workl[invsub], &ldq, workev, v, &ldv, &workd[V->n], &ierr, 1, 1);
+        clacpy_("A", &V->n, &V->nconv, v, &ldv, z, &ldz, 1);
 
         for (int j = 0; j < V->nconv; j++)
         {
@@ -290,7 +290,7 @@ ARNAUD_cneupd(struct ARNAUD_state_s *V, int rvec, int howmny, int* select,
             // 30
 
             ctrevc_("R", "S", select, &V->ncv, &workl[iuptri], &ldq, vl, &int1,
-                    &workl[invsub], &ldq, &V->ncv, &outncv, workev, rwork, &ierr);
+                    &workl[invsub], &ldq, &V->ncv, &outncv, workev, rwork, &ierr, 1, 1);
             if (ierr != 0)
             {
                 V->info = -9;
@@ -325,7 +325,7 @@ ARNAUD_cneupd(struct ARNAUD_state_s *V, int rvec, int howmny, int* select,
 
             //  The eigenvector mactirx Q of T is triangular. Form Z*Q
 
-            ctrmm_("R", "U", "N", "N", &V->n, &V->nconv, &cdbl1, &workl[invsub], &ldq, z, &ldz);
+            ctrmm_("R", "U", "N", "N", &V->n, &V->nconv, &cdbl1, &workl[invsub], &ldq, z, &ldz, 1, 1, 1, 1);
 
         }
 
@@ -1048,8 +1048,8 @@ LINE40:
         csscal_(&n, &temp1, &v[ldv*V->aitr_j], &int1);
         csscal_(&n, &temp1, &workd[ipj], &int1);
     } else {
-        clascl_("G", &i, &i, rnorm, &dbl1, &n, &int1, &v[ldv*V->aitr_j], &n, &infol);
-        clascl_("G", &i, &i, rnorm, &dbl1, &n, &int1, &workd[ipj], &n, &infol);
+        clascl_("G", &i, &i, rnorm, &dbl1, &n, &int1, &v[ldv*V->aitr_j], &n, &infol, 1);
+        clascl_("G", &i, &i, rnorm, &dbl1, &n, &int1, &workd[ipj], &n, &infol, 1);
     }
 
     //  STEP 3:  r_{j} = OP*v_{j}; Note that p_{j} = B*v_{j}
@@ -1122,12 +1122,12 @@ LINE60:
     //  Compute the j Fourier coefficients w_{j}
     //  WORKD(IPJ:IPJ+N-1) contains B*OP*v_{j}.
     tmp_int = V->aitr_j + 1;
-    cgemv_("C", &n, &tmp_int, &cdbl1, v, &ldv, &workd[ipj], &int1, &cdbl0, &h[ldh*(V->aitr_j)], &int1);
+    cgemv_("C", &n, &tmp_int, &cdbl1, v, &ldv, &workd[ipj], &int1, &cdbl0, &h[ldh*(V->aitr_j)], &int1, 1);
 
     //  Orthogonalize r_{j} against V_{j}.
     //  RESID contains OP*v_{j}. See STEP 3.
 
-    cgemv_("N", &n, &tmp_int, &cdblm1, v, &ldv, &h[ldh*(V->aitr_j)], &int1, &cdbl1, resid, &int1);
+    cgemv_("N", &n, &tmp_int, &cdblm1, v, &ldv, &h[ldh*(V->aitr_j)], &int1, &cdbl1, resid, &int1, 1);
 
     if (V->aitr_j > 0) { h[V->aitr_j + ldh*(V->aitr_j-1)] = ARNAUD_cplxf(V->aitr_betaj, 0.0f); }
 
@@ -1191,14 +1191,14 @@ LINE80:
     //  Compute V_{j}^T * B * r_{j}.
     //  WORKD(IRJ:IRJ+J-1) = v(:,1:J)'*WORKD(IPJ:IPJ+N-1).
     tmp_int = V->aitr_j + 1;
-    cgemv_("C", &n, &tmp_int, &cdbl1, v, &ldv, &workd[ipj], &int1, &cdbl0, &workd[irj], &int1);
+    cgemv_("C", &n, &tmp_int, &cdbl1, v, &ldv, &workd[ipj], &int1, &cdbl0, &workd[irj], &int1, 1);
 
     //  Compute the correction to the residual:
     //  r_{j} = r_{j} - V_{j} * WORKD(IRJ:IRJ+J-1).
     //  The correction to H is v(:,1:J)*H(1:J,1:J)
     //  + v(:,1:J)*WORKD(IRJ:IRJ+J-1)*e'_j.
 
-    cgemv_("N", &n, &tmp_int, &cdblm1, v, &ldv, &workd[irj], &int1, &cdbl1, resid, &int1);
+    cgemv_("N", &n, &tmp_int, &cdblm1, v, &ldv, &workd[irj], &int1, &cdbl1, resid, &int1, 1);
     caxpy_(&tmp_int, &cdbl1, &workd[irj], &int1, &h[ldh*(V->aitr_j)], &int1);
 
     V->aitr_orth2 = 1;
@@ -1289,7 +1289,7 @@ LINE100:
                 tmp_int = k + np;
                 // clanhs(norm, n, a, lda, work) with "work" being float type
                 // Recasting complex workspace to float for scratch space.
-                tst1 = clanhs_("1", &tmp_int, h, &ldh, (float*)&workd[n]);
+                tst1 = clanhs_("1", &tmp_int, h, &ldh, (float*)&workd[n], 1);
             }
             if (cabsf(h[i+1 + ldh*i]) <= fmaxf(ulp*tst1, smlnum))
             {
@@ -1323,7 +1323,7 @@ cnapps(int n, int* kev, int np, ARNAUD_CPLXF_TYPE* shift, ARNAUD_CPLXF_TYPE* v,
 
     //  Initialize Q to the identity to accumulate
     //  the rotations and reflections
-    claset_("G", &kplusp, &kplusp, &cdbl0, &cdbl1, q, &ldq);
+    claset_("G", &kplusp, &kplusp, &cdbl0, &cdbl1, q, &ldq, 1);
 
     //  Quick return if there are no shifts to apply
 
@@ -1347,7 +1347,7 @@ cnapps(int n, int* kev, int np, ARNAUD_CPLXF_TYPE* shift, ARNAUD_CPLXF_TYPE* v,
                 if (tst1 == 0.0f)
                 {
                    tmp_int = kplusp - jj;
-                    clanhs_("1", &tmp_int, h, &ldh, (float*)workl);
+                    clanhs_("1", &tmp_int, h, &ldh, (float*)workl, 1);
                 }
                 if (fabsf(crealf(h[iend+1 + ldh*iend])) <= fmaxf(ulp*tst1, smlnum))
                 {
@@ -1448,7 +1448,7 @@ cnapps(int n, int* kev, int np, ARNAUD_CPLXF_TYPE* shift, ARNAUD_CPLXF_TYPE* v,
                fabsf(cimagf(h[i + ldh*i])) + fabsf(cimagf(h[i+1 + ldh*(i+1)]));
         if (tst1 == 0.0f)
         {
-            tst1 = clanhs_("1", kev, h, &ldh, (float*)workl);
+            tst1 = clanhs_("1", kev, h, &ldh, (float*)workl, 1);
         }
         if (crealf(h[i+1 + ldh*i]) <= fmaxf(ulp*tst1, smlnum))
         {
@@ -1465,7 +1465,7 @@ cnapps(int n, int* kev, int np, ARNAUD_CPLXF_TYPE* shift, ARNAUD_CPLXF_TYPE* v,
 
     if (crealf(h[*kev + ldh*(*kev-1)]) > 0.0f)
     {
-        cgemv_("N", &n, &kplusp, &cdbl1, v, &ldv, &q[(*kev)*ldq], &int1, &cdbl0, &workd[n], &int1);
+        cgemv_("N", &n, &kplusp, &cdbl1, v, &ldv, &q[(*kev)*ldq], &int1, &cdbl0, &workd[n], &int1, 1);
     }
 
     //  Compute column 1 to kev of (V*Q) in backward order
@@ -1474,13 +1474,13 @@ cnapps(int n, int* kev, int np, ARNAUD_CPLXF_TYPE* shift, ARNAUD_CPLXF_TYPE* v,
     for (i = 0; i < *kev; i++)
     {
         tmp_int = kplusp - i;
-        cgemv_("N", &n, &tmp_int, &cdbl1, v, &ldv, &q[(*kev-i-1)*ldq], &int1, &cdbl0, workd, &int1);
+        cgemv_("N", &n, &tmp_int, &cdbl1, v, &ldv, &q[(*kev-i-1)*ldq], &int1, &cdbl0, workd, &int1, 1);
         ccopy_(&n, workd, &int1, &v[(kplusp-i-1)*ldv], &int1);
     }
 
     //   Move v(:,kplusp-kev+1:kplusp) into v(:,1:kev).
 
-    clacpy_("A", &n, kev, &v[ldv*(kplusp - *kev)], &ldv, v, &ldv);
+    clacpy_("A", &n, kev, &v[ldv*(kplusp - *kev)], &ldv, v, &ldv, 1);
 
     //  Copy the (kev+1)-st column of (V*Q) in the appropriate place
 
@@ -1523,8 +1523,8 @@ cneigh(float* rnorm, int n, ARNAUD_CPLXF_TYPE* h, int ldh, ARNAUD_CPLXF_TYPE* ri
     //     zlahqr returns the full Schur form of H
     //     in WORKL(1:N**2), and the Schur vectors in q.
 
-    clacpy_("A", &n, &n, h, &ldh, workl, &n);
-    claset_("A", &n, &n, &c0, &c1, q, &ldq);
+    clacpy_("A", &n, &n, h, &ldh, workl, &n, 1);
+    claset_("A", &n, &n, &c0, &c1, q, &ldq, 1);
     clahqr_(&int1, &int1, &n, &int1, &n, workl, &ldh, ritz, &int1, &n, q, &ldq, ierr);
 
     if (*ierr != 0) { return; }
@@ -1535,7 +1535,7 @@ cneigh(float* rnorm, int n, ARNAUD_CPLXF_TYPE* h, int ldh, ARNAUD_CPLXF_TYPE* ri
     //     apply the Schur vectors to get the corresponding
     //     eigenvectors.
 
-    ctrevc_("R", "B", select, &n, workl, &n, vl, &n, q, &ldq, &n, &n, &workl[n*n], rwork, ierr);
+    ctrevc_("R", "B", select, &n, workl, &n, vl, &n, q, &ldq, &n, &n, &workl[n*n], rwork, ierr, 1, 1);
 
     if (*ierr != 0) { return; }
 
@@ -1697,8 +1697,8 @@ LINE20:
 
 LINE30:
 
-    cgemv_("C", &n, &j, &c1, v, &ldv, workd, &int1, &c0, &workd[n], &int1);
-    cgemv_("N", &n, &j, &cm1, v, &ldv, &workd[n], &int1, &c1, resid, &int1);
+    cgemv_("C", &n, &j, &c1, v, &ldv, workd, &int1, &c0, &workd[n], &int1, 1);
+    cgemv_("N", &n, &j, &cm1, v, &ldv, &workd[n], &int1, &c1, resid, &int1, 1);
 
     //  Compute the B-norm of the orthogonalized starting vector
 
