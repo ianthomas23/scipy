@@ -156,7 +156,7 @@ py3.extension_module('_fitpack',
   include_directories: 'src/',
   dependencies: np_dep,
   link_args: version_link_args,
-  link_language: 'fortran',
+  link_language: 'c',
   install: true,
   subdir: 'scipy/interpolate'
 )
@@ -176,7 +176,7 @@ py3.extension_module('_dfitpack',
   link_with: [fitpack_lib],
   override_options: ['b_lto=false'],
   install: true,
-  link_language: 'fortran',
+  link_language: 'c',
   subdir: 'scipy/interpolate'
 )
 
