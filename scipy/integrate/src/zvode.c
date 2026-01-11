@@ -656,7 +656,7 @@ zvsol(zvode_common_struct_t* S, ZVODE_CPLX_TYPE* restrict wm, int* restrict iwm,
     {
         case 1:
         case 2: {
-            zgetrs_("N", &S->n, &int1, wm, &S->n, &iwm[30], x, &S->n, &ier);
+            zgetrs_("N", &S->n, &int1, wm, &S->n, &iwm[30], x, &S->n, &ier, 1);
             break;
         }
         case 3: {
@@ -698,7 +698,7 @@ zvsol(zvode_common_struct_t* S, ZVODE_CPLX_TYPE* restrict wm, int* restrict iwm,
             int ml = iwm[0];
             int mu = iwm[1];
             int meband = 2 * ml + mu + 1;
-            zgbtrs_("N", &S->n, &ml, &mu, &int1, wm, &meband, &iwm[30], x, &S->n, &ier);
+            zgbtrs_("N", &S->n, &ml, &mu, &int1, wm, &meband, &iwm[30], x, &S->n, &ier, 1);
             break;
         }
     }

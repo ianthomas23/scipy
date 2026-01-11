@@ -487,7 +487,7 @@ solsy(double* wm, int* iwm, double* x, double* tem, lsoda_common_struct_t* S)
 
     if ((S->miter == 1) || (S->miter == 2))
     {
-        dgetrs_("N", &S->n, &int1, &wm[2], &S->n, &iwm[20], x, &S->n, &ierr);
+        dgetrs_("N", &S->n, &int1, &wm[2], &S->n, &iwm[20], x, &S->n, &ierr, 1);
         return;
     } else if (S->miter == 3) {
         double phl0 = wm[1];
@@ -517,7 +517,7 @@ solsy(double* wm, int* iwm, double* x, double* tem, lsoda_common_struct_t* S)
         int ml = iwm[0];
         int mu = iwm[1];
         int meband = 2*ml + mu + 1;
-        dgbtrs_("N", &S->n, &ml, &mu, &int1, &wm[2], &meband, &iwm[20], x, &S->n, &ierr);
+        dgbtrs_("N", &S->n, &ml, &mu, &int1, &wm[2], &meband, &iwm[20], x, &S->n, &ierr, 1);
     }
 
     return;
