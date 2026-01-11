@@ -146,10 +146,10 @@ void scgs(int n, int k, float* V, int ldv, float* vnew, const int* indices, floa
         int block_size = end - start + 1;
 
         // Compute all projection coefficients for this block: work = V_block^T * vnew
-        sgemv_("T", &n, &block_size, &one, &V[start * ldv], &ldv, vnew, &ione, &zero, work, &ione);
+        sgemv_("T", &n, &block_size, &one, &V[start * ldv], &ldv, vnew, &ione, &zero, work, &ione, 1);
 
         // Orthogonalize: vnew = vnew - V_block * work
-        sgemv_("N", &n, &block_size, &neg_one, &V[start * ldv], &ldv, work, &ione, &one, vnew, &ione);
+        sgemv_("N", &n, &block_size, &neg_one, &V[start * ldv], &ldv, work, &ione, &one, vnew, &ione, 1);
 
         idx += 2;  // Move to next block
         start = indices[idx];
@@ -177,10 +177,10 @@ void dcgs(int n, int k, double* V, int ldv, double* vnew, const int* indices, do
         int block_size = end - start + 1;
 
         // Compute all projection coefficients for this block: work = V_block^T * vnew
-        dgemv_("T", &n, &block_size, &one, &V[start * ldv], &ldv, vnew, &ione, &zero, work, &ione);
+        dgemv_("T", &n, &block_size, &one, &V[start * ldv], &ldv, vnew, &ione, &zero, work, &ione, 1);
 
         // Orthogonalize: vnew = vnew - V_block * work
-        dgemv_("N", &n, &block_size, &neg_one, &V[start * ldv], &ldv, work, &ione, &one, vnew, &ione);
+        dgemv_("N", &n, &block_size, &neg_one, &V[start * ldv], &ldv, work, &ione, &one, vnew, &ione, 1);
 
         idx += 2;  // Move to next block
         start = indices[idx];
@@ -208,10 +208,10 @@ void ccgs(int n, int k, PROPACK_CPLXF_TYPE* V, int ldv, PROPACK_CPLXF_TYPE* vnew
         int block_size = end - start + 1;
 
         // Compute all projection coefficients for this block: work = V_block^H * vnew
-        cgemv_("C", &n, &block_size, &one, &V[start * ldv], &ldv, vnew, &ione, &zero, work, &ione);
+        cgemv_("C", &n, &block_size, &one, &V[start * ldv], &ldv, vnew, &ione, &zero, work, &ione, 1);
 
         // Orthogonalize: vnew = vnew - V_block * work
-        cgemv_("N", &n, &block_size, &neg_one, &V[start * ldv], &ldv, work, &ione, &one, vnew, &ione);
+        cgemv_("N", &n, &block_size, &neg_one, &V[start * ldv], &ldv, work, &ione, &one, vnew, &ione, 1);
 
         idx += 2;  // Move to next block
         start = indices[idx];
@@ -239,10 +239,10 @@ void zcgs(int n, int k, PROPACK_CPLX_TYPE* V, int ldv, PROPACK_CPLX_TYPE* vnew, 
         int block_size = end - start + 1;
 
         // Compute all projection coefficients for this block: work = V_block^H * vnew
-        zgemv_("C", &n, &block_size, &one, &V[start * ldv], &ldv, vnew, &ione, &zero, work, &ione);
+        zgemv_("C", &n, &block_size, &one, &V[start * ldv], &ldv, vnew, &ione, &zero, work, &ione, 1);
 
         // Orthogonalize: vnew = vnew - V_block * work
-        zgemv_("N", &n, &block_size, &neg_one, &V[start * ldv], &ldv, work, &ione, &one, vnew, &ione);
+        zgemv_("N", &n, &block_size, &neg_one, &V[start * ldv], &ldv, work, &ione, &one, vnew, &ione, 1);
 
         idx += 2;  // Move to next block
         start = indices[idx];
