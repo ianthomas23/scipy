@@ -594,7 +594,7 @@ dvsol(vode_common_struct_t* S, double* restrict wm, int* restrict iwm, double* r
     {
         case 1:
         case 2: {
-            dgetrs_("N", &S->n, &int1, &wm[2], &S->n, &iwm[30], x, &S->n, &ier);
+            dgetrs_("N", &S->n, &int1, &wm[2], &S->n, &iwm[30], x, &S->n, &ier, 1);
             break;
         }
         case 3: {
@@ -622,7 +622,7 @@ dvsol(vode_common_struct_t* S, double* restrict wm, int* restrict iwm, double* r
             int ml = iwm[0];
             int mu = iwm[1];
             int meband = 2 * ml + mu + 1;
-            dgbtrs_("N", &S->n, &ml, &mu, &int1, &wm[2], &meband, &iwm[30], x, &S->n, &ier);
+            dgbtrs_("N", &S->n, &ml, &mu, &int1, &wm[2], &meband, &iwm[30], x, &S->n, &ier, 1);
             break;
         }
     }

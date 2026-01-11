@@ -18,17 +18,17 @@ void daxpy_(int* n, double* a, double* x, int* incx, double* y, int* incy);
 void dcopy_(int* n, double* x, int* incx, double* y, int* incy);
 void dscal_(int* n, double* a, double* x, int* incx);
 void dgbtrf_(int* m, int* n, int* kl, int* ku, double* ab, int* ldab, int* ipiv, int* info);
-void dgbtrs_(char* trans, int* n, int* kl, int* ku, int* nrhs, double* ab, int* ldab, int* ipiv, double* b, int* ldb, int* info);
+void dgbtrs_(char* trans, int* n, int* kl, int* ku, int* nrhs, double* ab, int* ldab, int* ipiv, double* b, int* ldb, int* info, int);
 void dgetrf_(int* m, int* n, double* a, int* lda, int* ipiv, int* info);
-void dgetrs_(char* trans, int* n, int* nrhs, double* a, int* lda, int* ipiv, double* b, int* ldb, int* info);
+void dgetrs_(char* trans, int* n, int* nrhs, double* a, int* lda, int* ipiv, double* b, int* ldb, int* info, int);
 
 // For ZVODE complex routines
 void zaxpy_(int* n, ZVODE_CPLX_TYPE* a, ZVODE_CPLX_TYPE* x, int* incx, ZVODE_CPLX_TYPE* y, int* incy);
 void zcopy_(int* n, ZVODE_CPLX_TYPE* x, int* incx, ZVODE_CPLX_TYPE* y, int* incy);
 void zscal_(int* n, ZVODE_CPLX_TYPE* a, ZVODE_CPLX_TYPE* x, int* incx);
 void zgbtrf_(int* m, int* n, int* kl, int* ku, ZVODE_CPLX_TYPE* ab, int* ldab, int* ipiv, int* info);
-void zgbtrs_(char* trans, int* n, int* kl, int* ku, int* nrhs, ZVODE_CPLX_TYPE* ab, int* ldab, int* ipiv, ZVODE_CPLX_TYPE* b, int* ldb, int* info);
+void zgbtrs_(char* trans, int* n, int* kl, int* ku, int* nrhs, ZVODE_CPLX_TYPE* ab, int* ldab, int* ipiv, ZVODE_CPLX_TYPE* b, int* ldb, int* info, int);
 void zgetrf_(int* m, int* n, ZVODE_CPLX_TYPE* a, int* lda, int* ipiv, int* info);
-void zgetrs_(char* trans, int* n, int* nrhs, ZVODE_CPLX_TYPE* a, int* lda, int* ipiv, ZVODE_CPLX_TYPE* b, int* ldb, int* info);
+void zgetrs_(char* trans, int* n, int* nrhs, ZVODE_CPLX_TYPE* a, int* lda, int* ipiv, ZVODE_CPLX_TYPE* b, int* ldb, int* info, int);
 
 #endif
