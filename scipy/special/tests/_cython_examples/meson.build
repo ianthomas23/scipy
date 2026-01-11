@@ -12,7 +12,7 @@ endif
 
 cython_args = []
 if cy.version().version_compare('>=3.1.0')
-  cython_args += ['-Xfreethreading_compatible=True']
+  cython_args += ['-Xfreethreading_compatible=False']
 endif
 
 py3.extension_module(
