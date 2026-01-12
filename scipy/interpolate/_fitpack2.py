@@ -22,7 +22,7 @@ __all__ = [
 import warnings
 from threading import Lock
 
-from numpy import zeros, concatenate, ravel, diff, array
+from numpy import zeros, concatenate, ravel, diff, array, int32
 import numpy as np
 
 from . import _fitpack_impl
@@ -30,7 +30,7 @@ from . import _dfitpack as dfitpack
 from scipy._lib._array_api import xp_capabilities
 
 
-dfitpack_int = dfitpack.types.intvar.dtype
+dfitpack_int = int32  # dfitpack.types.intvar.dtype
 FITPACK_LOCK = Lock()
 
 

@@ -28,7 +28,7 @@ import warnings
 import numpy as np
 from . import _fitpack
 from numpy import (atleast_1d, array, ones, zeros, sqrt, ravel, transpose,
-                   empty, iinfo, asarray)
+                   empty, iinfo, asarray, int32)
 
 # Try to replace _fitpack interface with
 #  f2py-generated version
@@ -37,7 +37,8 @@ from . import _dfitpack as dfitpack
 from scipy._lib._array_api import array_namespace, concat_1d, xp_capabilities
 
 
-dfitpack_int = dfitpack.types.intvar.dtype
+
+dfitpack_int = int32  # dfitpack.types.intvar.dtype
 
 
 def _int_overflow(x, exception, msg=None):
@@ -120,7 +121,7 @@ def splprep(x, w=None, u=None, ub=None, ue=None, k=3, task=0, s=None, t=None,
             if x[i][0] != x[i][-1]:
                 if not quiet:
                     warnings.warn(
-                        RuntimeWarning(f'Setting x[{i}][{m}]=x[{i}][0]'), 
+                        RuntimeWarning(f'Setting x[{i}][{m}]=x[{i}][0]'),
                         stacklevel=2
                     )
                 x[i][-1] = x[i][0]
@@ -193,7 +194,7 @@ def splprep(x, w=None, u=None, ub=None, ue=None, k=3, task=0, s=None, t=None,
         warnings.warn(
             RuntimeWarning(
                 _iermess[ier][0] + f"\tk={k} n={len(t)} m={m} fp={fp} s={s}"
-            ), 
+            ),
             stacklevel=2
         )
     if ier > 0 and not full_output:
@@ -594,7 +595,7 @@ def bisplrep(x, y, z, w=None, xb=None, xe=None, yb=None, ye=None,
     ierm = min(11, max(-3, ier))
     if ierm <= 0 and not quiet:
         _mess = (
-            _iermess2[ierm][0] + 
+            _iermess2[ierm][0] +
             f"\tkx,ky={kx},{ky} nx,ny={len(tx)},{len(ty)} m={m} fp={fp} s={s}"
         )
         warnings.warn(RuntimeWarning(_mess), stacklevel=2)
