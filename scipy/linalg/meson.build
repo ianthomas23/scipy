@@ -56,7 +56,7 @@ linalg_cython_gen = generator(cython,
   output : '@BASENAME@.c',
   depends : [_cython_tree, __init__py, cython_blas_pxd])#, cython_linalg])
 
-link_language_blas_lapack = 'fortran'
+link_language_blas_lapack = 'c'
 if get_option('_without-fortran')
   link_language_blas_lapack = 'c'
 endif
