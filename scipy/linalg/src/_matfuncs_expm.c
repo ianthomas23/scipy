@@ -2291,7 +2291,7 @@ matrix_exponential_s(PyArrayObject* a, float* restrict result, CBLAS_INT* info)
             if ((lband == 0) || (uband == 0)) {
                 // Triangular case - use Fragment 2.1 of Al-Mohy and Higham (2009)
                 for (int iter = s - 1; iter >= 0; iter--) {
-                    BLAS_FUNC(sgemm)("N", "N", &n, &n, &n, &(float){1.0f}, temp1, &n, temp1, &n, &(float){0.0f}, temp2, &n);
+                    BLAS_FUNC(sgemm)("N", "N", &n, &n, &n, &(float){1.0f}, temp1, &n, temp1, &n, &(float){0.0f}, temp2, &n, 1, 1);
                     float* swap = temp1;
                     temp1 = temp2;
                     temp2 = swap;
@@ -2327,7 +2327,7 @@ matrix_exponential_s(PyArrayObject* a, float* restrict result, CBLAS_INT* info)
             } else {
                 // General dense case, compute A**(2**s) by repeated squaring.
                 for (int i = 0; i < s; i++) {
-                    BLAS_FUNC(sgemm)("N", "N", &n, &n, &n, &(float){1.0f}, temp1, &n, temp1, &n, &(float){0.0f}, temp2, &n);
+                    BLAS_FUNC(sgemm)("N", "N", &n, &n, &n, &(float){1.0f}, temp1, &n, temp1, &n, &(float){0.0f}, temp2, &n, 1, 1);
                     // Swap pointers
                     float *swap = temp1;
                     temp1 = temp2;
@@ -2448,7 +2448,7 @@ matrix_exponential_d(PyArrayObject* a, double* restrict result, CBLAS_INT* info)
             if ((lband == 0) || (uband == 0)) {
                 // Triangular case - use Fragment 2.1 of Al-Mohy and Higham (2009)
                 for (int iter = s - 1; iter >= 0; iter--) {
-                    BLAS_FUNC(dgemm)("N", "N", &n, &n, &n, &(double){1.0}, temp1, &n, temp1, &n, &(double){0.0}, temp2, &n);
+                    BLAS_FUNC(dgemm)("N", "N", &n, &n, &n, &(double){1.0}, temp1, &n, temp1, &n, &(double){0.0}, temp2, &n, 1, 1);
                     double* swap = temp1;
                     temp1 = temp2;
                     temp2 = swap;
@@ -2484,7 +2484,7 @@ matrix_exponential_d(PyArrayObject* a, double* restrict result, CBLAS_INT* info)
             } else {
                 // General dense case, compute A**(2**s) by repeated squaring.
                 for (int i = 0; i < s; i++) {
-                    BLAS_FUNC(dgemm)("N", "N", &n, &n, &n, &(double){1.0}, temp1, &n, temp1, &n, &(double){0.0}, temp2, &n);
+                    BLAS_FUNC(dgemm)("N", "N", &n, &n, &n, &(double){1.0}, temp1, &n, temp1, &n, &(double){0.0}, temp2, &n, 1, 1);
                     // Swap pointers
                     double *swap = temp1;
                     temp1 = temp2;
@@ -2608,9 +2608,9 @@ matrix_exponential_c(PyArrayObject* a, SCIPY_C* restrict result, CBLAS_INT* info
 #if defined(_MSC_VER)
                     SCIPY_C c_one = CPLX_C(1.0f, 0.0f);
                     SCIPY_C c_zero = CPLX_C(0.0f, 0.0f);
-                    BLAS_FUNC(cgemm)("N", "N", &n, &n, &n, &c_one, temp1, &n, temp1, &n, &c_zero, temp2, &n);
+                    BLAS_FUNC(cgemm)("N", "N", &n, &n, &n, &c_one, temp1, &n, temp1, &n, &c_zero, temp2, &n, 1, 1);
 #else
-                    BLAS_FUNC(cgemm)("N", "N", &n, &n, &n, &(SCIPY_C){CPLX_C(1.0f, 0.0f)}, temp1, &n, temp1, &n, &(SCIPY_C){CPLX_C(0.0f, 0.0f)}, temp2, &n);
+                    BLAS_FUNC(cgemm)("N", "N", &n, &n, &n, &(SCIPY_C){CPLX_C(1.0f, 0.0f)}, temp1, &n, temp1, &n, &(SCIPY_C){CPLX_C(0.0f, 0.0f)}, temp2, &n, 1, 1);
 #endif
                     SCIPY_C* swap = temp1;
                     temp1 = temp2;
@@ -2686,9 +2686,9 @@ matrix_exponential_c(PyArrayObject* a, SCIPY_C* restrict result, CBLAS_INT* info
 #if defined(_MSC_VER)
                     SCIPY_C c_one = CPLX_C(1.0f, 0.0f);
                     SCIPY_C c_zero = CPLX_C(0.0f, 0.0f);
-                    BLAS_FUNC(cgemm)("N", "N", &n, &n, &n, &c_one, temp1, &n, temp1, &n, &c_zero, temp2, &n);
+                    BLAS_FUNC(cgemm)("N", "N", &n, &n, &n, &c_one, temp1, &n, temp1, &n, &c_zero, temp2, &n, 1, 1);
 #else
-                    BLAS_FUNC(cgemm)("N", "N", &n, &n, &n, &(SCIPY_C){CPLX_C(1.0f, 0.0f)}, temp1, &n, temp1, &n, &(SCIPY_C){CPLX_C(0.0f, 0.0f)}, temp2, &n);
+                    BLAS_FUNC(cgemm)("N", "N", &n, &n, &n, &(SCIPY_C){CPLX_C(1.0f, 0.0f)}, temp1, &n, temp1, &n, &(SCIPY_C){CPLX_C(0.0f, 0.0f)}, temp2, &n, 1, 1);
 #endif
                     // Swap pointers
                     SCIPY_C *swap = temp1;
@@ -2812,9 +2812,9 @@ matrix_exponential_z(PyArrayObject* a, SCIPY_Z* restrict result, CBLAS_INT* info
 #if defined(_MSC_VER)
                     SCIPY_Z z_one = CPLX_Z(1.0, 0.0);
                     SCIPY_Z z_zero = CPLX_Z(0.0, 0.0);
-                    BLAS_FUNC(zgemm)("N", "N", &n, &n, &n, &z_one, temp1, &n, temp1, &n, &z_zero, temp2, &n);
+                    BLAS_FUNC(zgemm)("N", "N", &n, &n, &n, &z_one, temp1, &n, temp1, &n, &z_zero, temp2, &n, 1, 1);
 #else
-                    BLAS_FUNC(zgemm)("N", "N", &n, &n, &n, &(SCIPY_Z){CPLX_Z(1.0, 0.0)}, temp1, &n, temp1, &n, &(SCIPY_Z){CPLX_Z(0.0, 0.0)}, temp2, &n);
+                    BLAS_FUNC(zgemm)("N", "N", &n, &n, &n, &(SCIPY_Z){CPLX_Z(1.0, 0.0)}, temp1, &n, temp1, &n, &(SCIPY_Z){CPLX_Z(0.0, 0.0)}, temp2, &n, 1, 1);
 #endif
                     SCIPY_Z* swap = temp1;
                     temp1 = temp2;
@@ -2890,9 +2890,9 @@ matrix_exponential_z(PyArrayObject* a, SCIPY_Z* restrict result, CBLAS_INT* info
 #if defined(_MSC_VER)
                     SCIPY_Z z_one = CPLX_Z(1.0, 0.0);
                     SCIPY_Z z_zero = CPLX_Z(0.0, 0.0);
-                    BLAS_FUNC(zgemm)("N", "N", &n, &n, &n, &z_one, temp1, &n, temp1, &n, &z_zero, temp2, &n);
+                    BLAS_FUNC(zgemm)("N", "N", &n, &n, &n, &z_one, temp1, &n, temp1, &n, &z_zero, temp2, &n, 1, 1);
 #else
-                    BLAS_FUNC(zgemm)("N", "N", &n, &n, &n, &(SCIPY_Z){CPLX_Z(1.0, 0.0)}, temp1, &n, temp1, &n, &(SCIPY_Z){CPLX_Z(0.0, 0.0)}, temp2, &n);
+                    BLAS_FUNC(zgemm)("N", "N", &n, &n, &n, &(SCIPY_Z){CPLX_Z(1.0, 0.0)}, temp1, &n, temp1, &n, &(SCIPY_Z){CPLX_Z(0.0, 0.0)}, temp2, &n, 1, 1);
 #endif
                     // Swap pointers
                     SCIPY_Z *swap = temp1;
