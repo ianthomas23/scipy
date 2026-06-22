@@ -9,7 +9,7 @@ if not cy.version().version_compare('>=3.2.0')
 endif
 
 cython_args = [
-  '-Xfreethreading_compatible=True',
+  '-Xfreethreading_compatible=False',
   '-I' + meson.project_build_root() / 'src' / 'ilp64_test_package',
 ]
 
