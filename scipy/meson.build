@@ -27,19 +27,19 @@ if is_mingw
   add_project_arguments('-fno-optimize-sibling-calls', language: ['fortran'])
 endif
 
-thread_dep = dependency('threads', required: false)
+thread_dep = dependency('threads_DONTUSE', required: false)
 
 
 # Uses the `numpy-config` executable (or a user's numpy.pc pkg-config file).
 _numpy_dep = dependency('numpy')
 f2py_freethreading_arg = []
-if _numpy_dep.version().version_compare('>=2.1.0')
-  f2py_freethreading_arg = ['--free-threading']
-  message('f2py free-threading enabled')
-else
-  message('f2py free-threading disabled; need numpy >=2.1.0.')
-  message('See https://github.com/mesonbuild/meson/issues/14651')
-endif
+#if _numpy_dep.version().version_compare('>=2.1.0')
+#  f2py_freethreading_arg = ['--free-threading']
+#  message('f2py free-threading enabled')
+#else
+#  message('f2py free-threading disabled; need numpy >=2.1.0.')
+#  message('See https://github.com/mesonbuild/meson/issues/14651')
+#endif
 
 # NumPy include directory - needed in all submodules
 # The chdir is needed because within numpy there's an `import signal`
@@ -151,9 +151,9 @@ cdata = configuration_data()
 # Test variable attribute to use for thread-local storage;
 # Adapted from `numpy/_core/meson.build`.
 check_tls_attrs = [
-  ['thread_local', 'HAVE_THREAD_LOCAL'],    # C23
-  ['_Thread_local', 'HAVE__THREAD_LOCAL'],  # C11/C17
-  ['__thread', 'HAVE__THREAD'],
+  ['thread_local_DONTUSE', 'HAVE_THREAD_LOCAL'],    # C23
+  ['_Thread_local_DONTUSE', 'HAVE__THREAD_LOCAL'],  # C11/C17
+  ['__thread_DONTUSE', 'HAVE__THREAD'],
 ]
 if is_windows and not is_mingw
   check_tls_attrs += ['__declspec(thread)', 'HAVE___DECLSPEC_THREAD_']
@@ -483,13 +483,13 @@ _cython_tree = [fs.copyfile('__init__.py')]
 
 cython_args = ['-3', '--fast-fail', '--output-file', '@OUTPUT@', '--include-dir', '@BUILD_ROOT@', '@INPUT@']
 if cy.version().version_compare('>=3.1.0')
-  cython_args += ['-Xfreethreading_compatible=True']
+  cython_args += ['-Xfreethreading_compatible=False']
 
   cython_shared_src = custom_target(
     install: false,
     output: '_cyutility.c',
     command: [
-      cython, '-3', '--fast-fail', '-Xfreethreading_compatible=True',
+      cython, '-3', '--fast-fail', '-Xfreethreading_compatible=False',
       '--generate-shared=' + meson.current_build_dir()/'_cyutility.c'
     ],
   )
