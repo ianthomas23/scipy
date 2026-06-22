@@ -247,7 +247,7 @@ endif
 # We are therefore certain that we're only linking to a single BLAS library.
 # Option (3) is the special case, which requires two blas_dep/lapack_dep
 # objects, with some different defines added to `compile_args`.
-# 
+#
 # Also note that lapack_dep includes blas_dep, so there is no need to
 # explicitly depend on blas_dep if an extension module already uses lapack_dep.
 
@@ -289,8 +289,8 @@ if blas_name == 'openblas' or blas_name == 'auto'
   blas = dependency('scipy-openblas', method: 'pkg-config', required: false)
   if blas.found()
     blas_name = 'scipy-openblas'
-  else  
-    # Try any other OpenBLAS. 
+  else
+    # Try any other OpenBLAS.
     # pkg-config uses a lower-case name while CMake uses a capitalized name,
     # so try that too to make the fallback detection with CMake work
     blas = dependency(['openblas', 'OpenBLAS'])
@@ -421,7 +421,7 @@ if use_ilp64 and not cython_blas_ilp64
       gnu_symbol_visibility: 'hidden',
     )
   endif
-  
+
   blas_lp64_dep = declare_dependency(
     dependencies: [blas, cblas],
     link_with: [g77_abi_wrappers_lp64],
@@ -792,7 +792,7 @@ configure_file(
 # subdirs with the most heavy builds should come first (that parallelizes a
 # little better).
 #
-subdir('_build_utils')  
+subdir('_build_utils')
 subdir('_external')
 subdir('_lib')
 subdir('linalg')

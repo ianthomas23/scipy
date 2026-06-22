@@ -16,7 +16,7 @@ py3.extension_module('__odrpack',
   link_args: version_link_args,
   dependencies: [blas_lp64_dep, np_dep],
   install: true,
-  link_language: 'fortran',
+  link_language: 'c',
   subdir: 'scipy/odr'
 )
 
