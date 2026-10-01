@@ -113,7 +113,7 @@ py_filter2d(PyObject *obj, PyObject *args)
 
 static int
 _transform(npy_intp *output_coordinates, double *input_coordinates,
-	   npy_intp output_rank, npy_intp input_rank, void *callback_data)
+	   int output_rank, int input_rank, void *callback_data)
 {
     npy_intp i;
     double shift = *(double *)callback_data;
