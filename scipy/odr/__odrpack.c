@@ -33,7 +33,7 @@ void F_FUNC(dwinf,DWINF)(F_INT *n, F_INT *m, F_INT *np, F_INT *nq, F_INT *ldwe, 
         F_INT *fs, F_INT *fjacb, F_INT *we1, F_INT *diff, F_INT *delts, F_INT *deltn,
         F_INT *t, F_INT *tt, F_INT *omega, F_INT *fjacd, F_INT *wrk1, F_INT *wrk2,
         F_INT *wrk3, F_INT *wrk4, F_INT *wrk5, F_INT *wrk6, F_INT *wrk7, F_INT *lwkmn);
-void F_FUNC(dluno,DLUNO)(F_INT *lun, char *fn, int fnlen);
+void F_FUNC(dluno,DLUNO)(F_INT *lun, char *fn, size_t fnlen);
 void F_FUNC(dlunc,DLUNC)(F_INT *lun);
 
 
